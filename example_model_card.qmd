@@ -1,0 +1,127 @@
+---
+title: "Example Model Card – Fish Detector"
+format:
+  html:
+    theme: cosmo
+    toc: false
+    number-sections: false
+    page-layout: full
+    self-contained: true
+  pdf:
+    documentclass: article
+    toc: false
+    number-sections: false
+    geometry: margin=1in
+    keep-tex: true
+    latex-engine: pdflatex
+execute:
+  enabled: true
+  echo: false
+  warning: false
+  message: false
+  freeze: auto
+jupyter: python3
+---
+
+# Model Card – One‑Page Quick Guide
+
+![](noaa_logo.png){width=120px align=right}
+
+![](example_detection.png){width=320px align=right}
+
+**Model Name:** YOLO-v11 Fish Detector
+
+**Task:** Object Detection
+
+**Classes:** Fish (1)
+
+**Version:** v1.0
+
+---
+
+## Overview
+This model detects fish in underwater images. It spots about 9 out of every 10 fish and rarely mistakes coral or rocks for fish. Adjust the confidence slider to reduce false positives (but you might miss a few shy fish).
+
+---
+
+## Model Details
+- **Architecture:** YOLO-v11 (custom)
+- **Input Size:** 640x640
+- **Training Schedule:** 100 epochs, batch size 32
+
+---
+
+## Intended Use & Limitations
+- Designed for underwater fish detection in clear to moderate turbidity.
+- Not reliable in low-light, extreme turbidity, or for unseen species.
+
+---
+
+## Dataset & Pre‑processing
+- **Source:** NOAA Underwater Dataset (10,000 images)
+- **Splits:** 80% train, 10% val, 10% test
+- **Augmentations:** Flip, rotate, color jitter
+
+---
+
+## Performance
+- **Main Metrics:**
+    - Precision: 0.885
+    - Recall: 0.861
+    - mAP50: 0.937
+
+- **Curves:**
+
+```{python}
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import numpy as np
+
+# Use NMFS "oceans" palette for modern NOAA look
+nmfs_oceans = ["#001743", "#002364", "#003087", "#0085CA", "#5EB6D9", "#C6E6F0"]
+pr = np.array([[0.99, 0.70], [0.95, 0.80], [0.90, 0.86], [0.85, 0.89], [0.80, 0.90]])
+plt.figure(figsize=(4,3))
+plt.plot(pr[:,1], pr[:,0], marker='o', color=nmfs_oceans[3], linewidth=3, label='PR Curve')
+plt.xlabel('Recall', fontsize=11)
+plt.ylabel('Precision', fontsize=11)
+plt.title('Precision-Recall Curve', fontsize=13, color=nmfs_oceans[0])
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+
+- **FP/FN Example:** At threshold 0.25, ~11 false positives and 14 false negatives per 100 predictions.
+
+---
+
+## Ethical & Environmental Risks
+- May undercount fish in murky water or overcount in presence of similar objects.
+- Use as a decision aid, not a replacement for expert review.
+
+---
+
+## Usage Example
+```python
+from fish_detector import FishDetector
+model = FishDetector('yolov11-fish.pt')
+results = model.detect('underwater_photo.jpg', conf=0.25)
+results.show()
+```
+
+---
+
+## Maintenance & Versioning
+- **Changelog:** v1.0 initial release
+- **Weights/Data Archive:** Available on request
+
+---
+
+> *Copy-paste summary:*
+> Using threshold 0.25, YOLO-v11 Fish Detector scores mAP50 0.937, Precision 0.885, Recall 0.861 on the hold-out set. Lowering threshold increases recall at the cost of precision. See model card for full FP/FN analysis.
+
+---
+
+<div style="font-size:10pt; color:#005CB9; text-align:right; margin-top:2em;">
+NOAA Fisheries | Model Card Example | <a href="https://github.com/nmfs-opensci/NOAA-NMFS-Brand-Resources">NOAA Brand Resources</a>
+</div>

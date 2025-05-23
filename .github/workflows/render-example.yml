@@ -1,0 +1,30 @@
+name: Render Example Model Card
+on:
+  workflow_dispatch:
+
+jobs:
+  render-example:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+      - name: Install Python dependencies
+        run: |
+          pip install matplotlib numpy
+      - name: Render example model card
+        run: |
+          quarto render example_model_card.qmd --to html
+          quarto render example_model_card.qmd --to pdf
+      - name: Upload rendered outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: example-model-card-outputs
+          path: |
+            example_model_card.html
+            example_model_card.pdf

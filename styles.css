@@ -1,0 +1,6 @@
+/* Simple style for one-page model card */
+body { font-family: 'Segoe UI', Arial, sans-serif; }
+h1, h2, h3 { color: #2c3e50; }
+img[align="right"] { margin-left: 2em; margin-bottom: 1em; border-radius: 8px; }
+section { margin-bottom: 2em; }
+hr { margin: 2em 0; }

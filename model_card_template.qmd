@@ -1,0 +1,103 @@
+---
+title: "Model Card"
+format:
+  html:
+    theme: cosmo
+    toc: false
+    number-sections: false
+    page-layout: full
+    self-contained: true
+  pdf:
+    documentclass: article
+    toc: false
+    number-sections: false
+    geometry: margin=1in
+    keep-tex: true
+    latex-engine: pdflatex
+execute:
+  enabled: true
+  echo: false
+  warning: false
+  message: false
+  freeze: auto
+jupyter: python3
+---
+
+# Model Card – One‑Page Quick Guide
+
+![](noaa_logo.png){width=120px align=right}
+
+![](example_detection.png){width=320px align=right}
+
+**Model Name:** {{< model_name >}}
+
+**Task:** {{< task >}}
+
+**Classes:** {{< classes >}}
+
+**Version:** {{< version >}}
+
+---
+
+## Overview
+{{< overview >}}
+
+---
+
+## Model Details
+- **Architecture:** {{< architecture >}}
+- **Input Size:** {{< input_size >}}
+- **Training Schedule:** {{< training_schedule >}}
+
+---
+
+## Intended Use & Limitations
+{{< intended_use >}}
+
+---
+
+## Dataset & Pre‑processing
+- **Source:** {{< dataset_source >}}
+- **Splits:** {{< dataset_splits >}}
+- **Augmentations:** {{< augmentations >}}
+
+---
+
+## Performance
+- **Main Metrics:** {{< main_metrics >}}
+- **Curves:**
+
+![](example_PR_curve.png){width=400px}
+
+- **FP/FN Example:** {{< fp_fn_example >}}
+
+---
+
+## Ethical & Environmental Risks
+{{< risks >}}
+
+---
+
+## Usage Example
+```python
+{{< usage_example >}}
+```
+
+---
+
+## Maintenance & Versioning
+- **Changelog:** {{< changelog >}}
+- **Weights/Data Archive:** {{< archive >}}
+
+---
+
+> *Copy-paste summary:*
+> {{< summary >}}
+
+---
+
+<div style="font-size:10pt; color:#005CB9; text-align:right; margin-top:2em;">
+NOAA Fisheries | Model Card Template | <a href="https://github.com/nmfs-opensci/NOAA-NMFS-Brand-Resources">NOAA Brand Resources</a>
+</div>
+
+---
