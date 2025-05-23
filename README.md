@@ -7,24 +7,36 @@ This repository provides a simple, one-page Quarto template for creating model c
 
 ### How to Use
 
-1. **Install Quarto:**
-   - Download and install from https://quarto.org/docs/get-started/
+1. **Install Requirements:**
+   - Download and install Quarto from https://quarto.org/docs/get-started/
+   - For PDF output:
+     ```powershell
+     quarto install tinytex
+     ```
 
 2. **Add your model details:**
    - Copy `model_card_template.qmd` to a new file (e.g., `my_model_card.qmd`).
    - Replace the placeholders (e.g., `{{< model_name >}}`) with your model's information.
-   - Add your subject image as `subject_image.png` and PR curve as `pr_curve.png` in the same folder.
+   - Required images:
+     - `nmfs-opensci-logo3.png` - NMFS OpenSci logo (download from [NOAA-NMFS-Brand-Resources](https://github.com/nmfs-opensci/NOAA-NMFS-Brand-Resources/blob/main/logos/nmfs-opensci-logo3.png))
+     - `example_detection.png` - An example of your model's detection/output
+     - `example_PR_curve.png` - Your model's precision-recall curve
 
 3. **Render the model card:**
-   - Open a terminal in this folder and run:
-     ```
-     quarto render my_model_card.qmd
-     ```
-   - The output HTML will be in the `_output` folder.
+   ```
+   # For HTML output
+   quarto render my_model_card.qmd --to html
+   
+   # For PDF output
+   quarto render my_model_card.qmd --to pdf
+   ```
+   The output will be in the `_output` folder.
 
 ### Template Features
 - Clean, one-page layout
-- Spaces for subject image and PR curve
+- NOAA/NMFS branded design
+- Automated PR curve plotting
+- Support for both HTML and PDF output
 - All key model card sections
 - Easy to edit and extend
 

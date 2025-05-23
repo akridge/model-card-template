@@ -14,12 +14,27 @@ jobs:
           python-version: '3.11'
       - name: Install Quarto
         uses: quarto-dev/quarto-actions/setup@v2
+      - name: Download NMFS logo
+        run: |
+          curl -L https://raw.githubusercontent.com/nmfs-opensci/NOAA-NMFS-Brand-Resources/main/logos/nmfs-opensci-logo3.png -o nmfs-opensci-logo3.png
       - name: Install Python dependencies
         run: |
           pip install matplotlib numpy jupyter pyyaml
       - name: Install TinyTeX for PDF rendering
         run: |
           quarto install tinytex
+      - name: Update TeX packages
+        run: |
+          tlmgr update --self
+          tlmgr install latex-bin
+          tlmgr install adjustbox
+          tlmgr install tcolorbox
+          tlmgr install collectbox
+          tlmgr install ucs
+          tlmgr install environ
+          tlmgr install trimspaces
+          tlmgr install parskip
+          tlmgr install makeindex
       - name: Render example model card
         run: |
           quarto render example_model_card.qmd --to html
@@ -29,5 +44,5 @@ jobs:
         with:
           name: example-model-card-outputs
           path: |
-            example_model_card.html
-            example_model_card.pdf
+            _output/example_model_card.html
+            _output/example_model_card.pdf
