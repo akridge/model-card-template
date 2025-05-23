@@ -25,7 +25,7 @@ jupyter: python3
 
 # Model Card – One‑Page Quick Guide
 
-![](noaa_logo.png){width=120px align=right}
+![](https://github.com/nmfs-opensci/NOAA-NMFS-Brand-Resources/raw/0a5436d1617be38f1d536f48788d73661bcc34ed/logos/nmfs-opensci-logo3.png){width=160px align=right}
 
 ![](example_detection.png){width=320px align=right}
 
