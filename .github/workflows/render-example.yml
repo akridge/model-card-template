@@ -16,7 +16,7 @@ jobs:
         uses: quarto-dev/quarto-actions/setup@v2
       - name: Install Python dependencies
         run: |
-          pip install matplotlib numpy
+          pip install matplotlib numpy jupyter pyyaml
       - name: Render example model card
         run: |
           quarto render example_model_card.qmd --to html
