@@ -1,57 +1,30 @@
-name: Render Example Model Card
+name: Build one-page model card PDF
+
 on:
-  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
 
 jobs:
-  render-example:
+  render:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - uses: actions/checkout@v4
+
       - name: Install Quarto
         uses: quarto-dev/quarto-actions/setup@v2
-      - name: Download NMFS logo
+        with:
+          version: "latest"
+
+      - name: Install TeX (tinytex)
+        uses: teatimeguest/setup-texlive@v2       # light-weight TeXLive
+
+      - name: Render PDF
         run: |
-          curl -L https://raw.githubusercontent.com/nmfs-opensci/NOAA-NMFS-Brand-Resources/main/logos/nmfs-opensci-logo3.png -o nmfs-opensci-logo3.png
-      - name: Install Python dependencies
-        run: |
-          pip install matplotlib numpy jupyter pyyaml
-      - name: Install and Setup TinyTeX
-        run: |
-          # Install TinyTeX
-          quarto install tinytex
-          
-          # Add TinyTeX to PATH
-          echo "$HOME/.TinyTeX/bin/x86_64-linux" >> $GITHUB_PATH
-          
-          # Verify installation and update
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr path add
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr update --self
-          
-          # Install required packages
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr install latex-bin
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr install adjustbox
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr install tcolorbox
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr install collectbox
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr install ucs
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr install environ
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr install trimspaces
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr install parskip
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr install makeindex
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr install graphics-def
-          $HOME/.TinyTeX/bin/x86_64-linux/tlmgr install pgf
-      - name: Render example model card
-        run: |
-          quarto render example_model_card.qmd --to html
           quarto render example_model_card.qmd --to pdf
-      - name: Upload rendered outputs
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: example-model-card-outputs
-          path: |
-            _output/example_model_card.html
-            _output/example_model_card.pdf
+          name: fish-detector-card
+          path: example_model_card.pdf

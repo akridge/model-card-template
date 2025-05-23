@@ -1,72 +1,62 @@
 ---
-title: "Example Model Card – Fish Detector"
+title: |
+  **YOLO-v11 Fish Detector**  
+  \large One-Page Model Card
+author: NOAA | CIMAR
 format:
-  html:
-    theme: cosmo
-    toc: false
-    number-sections: false
-    page-layout: full
-    self-contained: true
-    css: styles.css
   pdf:
-    documentclass: article
+    pdf-engine: xelatex          # modern fonts without fuss
+    geometry: margin=1in
+    mainfont: "Source Sans Pro"  # install via TeX or change to a font you have
     toc: false
-    number-sections: false
-    geometry: margin=0.5in
-    keep-tex: true
-    latex-engine: pdflatex
-execute:
-  enabled: true
-  echo: false
-  warning: false
-  message: false
-  freeze: auto
-jupyter: python3
+    colorlinks: true
+    header-includes: |
+      % --- NOAA colour palette for headings ---
+      \usepackage{xcolor,sectsty,tcolorbox}
+      \definecolor{noaablue}{HTML}{005CB9}
+      \sectionfont{\color{noaablue}}
+      \subsectionfont{\color{noaablue}}
+license: CC-BY 4.0
 ---
 
-<div class="header">
-  <div class="left-column">
-    <img src="docs/NOAA_FISHERIES_logoH_web.png" alt="NOAA Logo" class="logo">
-  </div>
-  <div class="right-column">
-    <h1>YOLO-v11 Fish Detector</h1>
-    <div class="key-metrics">
-      <p><strong>Precision:</strong> 0.885</p>
-      <p><strong>Recall:</strong> 0.861</p>
-      <p><strong>mAP50:</strong> 0.937</p>
-    </div>
-  </div>
-</div>
+:::{.columns}
+::: {.column width="50%"}
+![Detected fish](example_detection.png){width=100%}
+:::
+::: {.column width="50%"}
+![Precision–Recall curve](example_PR_curve.png){width=100%}
+:::
+:::
 
-<div class="content">
-  <div class="overview">
-    <h2>Overview</h2>
-    <p>This model detects fish in underwater images. It spots about 9 out of every 10 fish and rarely mistakes coral or rocks for fish. Adjust the confidence slider to reduce false positives (but you might miss a few shy fish).</p>
-  </div>
+### In plain language
 
-  <div class="details">
-    <h2>Model Details</h2>
-    <ul>
-      <li><strong>Architecture:</strong> YOLO-v11 (custom)</li>
-      <li><strong>Input Size:</strong> 640x640</li>
-      <li><strong>Training Schedule:</strong> 100 epochs, batch size 32</li>
-    </ul>
-  </div>
+* Finds **~9 of 10** fish in a typical frame  
+* **Rarely** mistakes coral or rocks for fish  
+* Slide the **confidence slider → right** to reduce *false positives*  
+  (but you might miss a few shy fish)
 
-  <div class="performance">
-    <h2>Performance</h2>
-    <img src="example_PR_curve.png" alt="PR Curve" class="pr-curve">
-  </div>
+---
 
-  <div class="usage">
-    <h2>Usage Example</h2>
-    <pre><code>from fish_detector import FishDetector
-model = FishDetector('yolov11-fish.pt')
-results = model.detect('underwater_photo.jpg', conf=0.25)
-results.show()</code></pre>
-  </div>
-</div>
+### Key numbers
 
-<div class="footer">
-  <p>NOAA Fisheries | Model Card Example | <a href="https://github.com/nmfs-opensci/NOAA-NMFS-Brand-Resources">NOAA Brand Resources</a></p>
-</div>
+| Metric      | Value | What it means – short & sweet |
+|-------------|------:|--------------------------------|
+| Precision   | **0.885** | Share of detections that are real fish |
+| Recall      | **0.861** | Share of all fish that are found       |
+| mAP@0.5     | **0.937** | Combined quality score                 |
+
+> **Tune the confidence threshold**
+
+| 0.20 | 0.50 *(default)* | 0.80 |
+|------|------------------|------|
+| Catch *everything* | Balanced | Only the sure hits |
+
+> “*All models are wrong, some are useful.*”
+
+Trained on expert-labelled images – both humans **and** models can be wrong.  
+Use the detector as a helpful **preview**, not the final answer.
+
+---
+
+\centering
+v1.0 · © 2025 NOAA / CIMAR · Questions: **michael.akridgee@noaa.gov**
