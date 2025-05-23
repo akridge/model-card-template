@@ -20,6 +20,8 @@ body {
   align-items: center;
   padding: 1em;
   color: white;
+  background: #005CB9;
+  border-bottom: 5px solid #003087;
 }
 
 .header .logo {
@@ -57,6 +59,8 @@ body {
   padding: 1em;
   font-size: 0.8em;
   color: #005CB9;
+  background: #f0f8ff;
+  border-top: 5px solid #003087;
 }
 
 .left-column {
@@ -66,4 +70,23 @@ body {
 .right-column {
   flex: 2;
   text-align: right;
+}
+
+/* Add subtle shadow and rounded corners for PDF aesthetics */
+@media print {
+  body {
+    background: white;
+  }
+  .header {
+    background: #005CB9;
+    color: white;
+  }
+  .content {
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .footer {
+    background: white;
+    border-top: none;
+  }
 }
