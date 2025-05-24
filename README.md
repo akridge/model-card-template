@@ -1,9 +1,7 @@
 # model-card-template
-model-card-template using quarto
+model-card-template
 
-## Quarto Model Card Template
-
-This repository provides a simple, one-page Quarto template for creating model cards for AI models.
+This repository provides a simple, one-page template for creating model cards for AI models.
 
 ### How to Use
 

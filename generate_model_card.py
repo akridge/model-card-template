@@ -37,9 +37,11 @@ def create_model_card(data_filename="model_card_data.json", output_filename="mod
     detection_image_path = data['image_paths']['detection_example']
     pr_curve_path = data['image_paths']['pr_curve']
 
+    # Increase page margins for better layout
     doc = SimpleDocTemplate(output_filename, pagesize=letter,
-                            rightMargin=0.5*inch, leftMargin=0.5*inch,
-                            topMargin=0.5*inch, bottomMargin=0.5*inch)
+                          rightMargin=0.75*inch, leftMargin=0.75*inch,
+                          topMargin=1.0*inch, bottomMargin=0.75*inch,
+                          allowSplitting=1)  # Allow content splitting across pages
     styles = getSampleStyleSheet()
 
     # Define custom colors for NOAA branding
@@ -172,10 +174,11 @@ def create_model_card(data_filename="model_card_data.json", output_filename="mod
     # Example detection image
     if os.path.exists(detection_image_path):
         img_detection = Image(detection_image_path)
-        img_width = 4.5 * inch # Max width for the column
+        img_width = min(4.0 * inch, col_width * 0.95)  # Reduced max width
         img_height = img_detection.drawHeight * (img_width / img_detection.drawWidth)
         img_detection.drawWidth = img_width
         img_detection.drawHeight = img_height
+        img_detection.keepWithNext = False  # Allow page breaks after image
         right_column_content.append(img_detection)
         right_column_content.append(Spacer(1, 0.1 * inch))
     else:
@@ -184,10 +187,11 @@ def create_model_card(data_filename="model_card_data.json", output_filename="mod
     # Precision-Recall curve image
     if os.path.exists(pr_curve_path):
         img_pr = Image(pr_curve_path)
-        img_width = 4.5 * inch # Max width for the column
+        img_width = min(4.0 * inch, col_width * 0.95)  # Reduced max width
         img_height = img_pr.drawHeight * (img_width / img_pr.drawWidth)
         img_pr.drawWidth = img_width
         img_pr.drawHeight = img_height
+        img_pr.keepWithNext = False  # Allow page breaks after image
         right_column_content.append(img_pr)
         right_column_content.append(Spacer(1, 0.1 * inch))
     else:
@@ -204,14 +208,20 @@ def create_model_card(data_filename="model_card_data.json", output_filename="mod
     col_width = (doc.width - column_gap) / 2.0
 
     table_data = [[left_column_content, right_column_content]]
-    column_table = Table(table_data, colWidths=[col_width, col_width])
+    column_table = Table(table_data, colWidths=[col_width, col_width], repeatRows=1)
     column_table.setStyle(TableStyle([
         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ('LEFTPADDING', (0, 0), (0, 0), 0),
         ('RIGHTPADDING', (0, 0), (0, 0), column_gap / 2),
         ('LEFTPADDING', (1, 0), (1, 0), column_gap / 2),
         ('RIGHTPADDING', (1, 0), (1, 0), 0),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
     ]))
+
+    # Make sure the table can split across pages if needed
+    column_table.keepWithNext = False
+    column_table.hAlign = 'LEFT'
+    
     story.append(column_table)
 
     # Add a final spacer before the footer to push it to the bottom
