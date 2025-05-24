@@ -1,7 +1,17 @@
-# model-card-template
-model-card-template
+# NOAA Model Card Template
 
-This repository provides a simple, one-page template for creating model cards for AI models.
+A modern, clean template for creating model cards using Quarto. This template provides a standardized way to document machine learning models following NOAA guidelines.
+
+![Example Model Card]()
+
+## Features
+
+- 📊 Clean, modern single-page layout
+- 🎨 NOAA/NMFS branded design with official colors
+- 📱 Responsive column layout
+- 🔄 Automated GitHub Actions workflow
+- 📈 Support for data visualization
+- 🎯 Focus on key metrics and explanations
 
 ### How to Use
 
@@ -41,7 +51,8 @@ This repository provides a simple, one-page template for creating model cards fo
 ---
 
 For more on Quarto, see [quarto.org](https://quarto.org/).
-
+- https://github.com/tensorflow/model-card-toolkit
+- https://modelcards.withgoogle.com/
 ----------
 #### Disclaimer
 This repository is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project content is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government.
