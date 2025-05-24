@@ -1,0 +1,42 @@
+name: Build model card PDF (Python)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+permissions:
+  contents: write         # commit docs/ PDF back
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Build PDF with Matplotlib
+        run: python build_card.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fish-detector-card
+          path: fish_detector_card.pdf
+
+      - name: Commit PDF to docs/
+        run: |
+          mkdir -p docs
+          cp fish_detector_card.pdf docs/
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/fish_detector_card.pdf
+          git commit -m "CI: update model card [skip ci]" || echo "no change"
+          git push

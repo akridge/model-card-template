@@ -1,10 +1,5 @@
 name: Build & publish one-page model card
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-
 env:
   CARD_FILE: example_model_card.pdf      # output name
 
