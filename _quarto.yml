@@ -1,6 +1,6 @@
 project:
-  type: document
-  output-dir: _output
+  type: document          # we’re targeting PDF (not a website)
+  output-dir: _output     # Quarto will write PDFs here
   render:
     - model_card_modern.qmd
 
@@ -22,7 +22,7 @@ metadata:
   author-meta: "NOAA Fisheries"
 
 format:
-  pdf:
+  pdf:                    # the built-in PDF target
     documentclass: scrbook
     classoption: ["oneside","openany"]
     number-sections: false

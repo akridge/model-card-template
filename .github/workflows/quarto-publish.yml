@@ -13,44 +13,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Checkout your repo
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # A) Get your code
+      - uses: actions/checkout@v3
 
-      # 2) Set up Docker Buildx (for caching)
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # B) Enable Docker Buildx for cache
+      - uses: docker/setup-buildx-action@v3
 
-      # 3) Restore Docker layer cache
-      - name: Restore Docker cache
-        uses: actions/cache@v3
+      # C) Restore layer cache
+      - uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      # 4) Build your quarto-pdf image
-      - name: Build Quarto PDF image
-        uses: docker/build-push-action@v3
+      # D) Build your Quarto/TinyTeX image
+      - uses: docker/build-push-action@v3
         with:
           context: .
           file: Dockerfile
           tags: quarto-pdf:latest
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          cache-to:   type=local,dest=/tmp/.buildx-cache
 
-      # 5) Run the container to render PDF
+      # E) Run the container to generate PDF
       - name: Render model card PDF
         run: |
           docker run --rm \
             -v "${{ github.workspace }}":/home/quarto/project \
-            quarto-pdf:latest \
-            model_card_modern.qmd --to pdf
+            quarto-pdf:latest
 
-      # 6) Upload the generated PDF
-      - name: Upload PDF artifact
-        uses: actions/upload-artifact@v3
+      # F) Publish the PDF as an artifact
+      - uses: actions/upload-artifact@v3
         with:
           name: model-card-pdf
           path: _output/*.pdf
