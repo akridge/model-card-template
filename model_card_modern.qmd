@@ -20,7 +20,7 @@ format:
         \usepackage{fancyhdr}
         \usepackage{graphicx}
         \usepackage{geometry}
-    mainfont: "Fira Sans"
+    mainfont: "Lato"
     geometry:
       - paperwidth=8.5in
       - paperheight=11in
