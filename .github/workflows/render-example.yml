@@ -2,7 +2,7 @@ name: Build one-page Model Card PDF
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
 
 jobs:
@@ -11,24 +11,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1 ── Install Quarto CLI (pinned)
       - uses: quarto-dev/quarto-actions/setup@v2
         with:
-          version: "1.7.0"          # <── was "latest"
+          version: "1.7.0"        # explicit tag avoids vlatest 404
 
-      # 2 ── TinyTeX + font
-      - name: Install TinyTeX & fonts
+      # TinyTeX only – no font downloads needed
+      - name: Install TinyTeX
         run: |
           quarto install tinytex --no-prompt
-          sudo apt-get update
-          sudo apt-get install -y fonts-source-sans-pro
 
-      # 3 ── Render PDF
       - name: Render model card
         run: |
           quarto render example_model_card.qmd --to pdf
 
-      # 4 ── Upload artefact
       - uses: actions/upload-artifact@v4
         with:
           name: fish-detector-card

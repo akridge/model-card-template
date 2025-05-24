@@ -5,9 +5,9 @@ title: |
 author: NOAA | CIMAR
 format:
   pdf:
-    pdf-engine: xelatex          # modern fonts without fuss
+    pdf-engine: xelatex         
     geometry: margin=1in
-    mainfont: "Source Sans Pro"  # install via TeX or change to a font you have
+    mainfont: "Liberation Sans"
     toc: false
     colorlinks: true
     header-includes: |

@@ -1,28 +1,6 @@
 project:
   type: default
-  output-dir: _output
-
 format:
-  html:
-    theme: cosmo
-    toc: false
-    number-sections: false
-    page-layout: full
-    css: styles.css
-    self-contained: true
-  pdf:
-    documentclass: article
-    toc: false
-    number-sections: false
-    geometry: margin=1in
-    keep-tex: true
-    latex-engine: pdflatex
-
+  pdf: default
 execute:
-  enabled: true
-  echo: false
-  warning: false
-  message: false
   freeze: auto
-
-jupyter: python3
