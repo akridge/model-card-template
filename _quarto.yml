@@ -1,5 +1,5 @@
 project:
-  type: default          # ← was "document", changed to "default"
+  type: default
   output-dir: _output
   render:
     - model_card_modern.qmd
@@ -7,8 +7,9 @@ project:
 metadata:
   lang: en
   date: today
+  version: "1.0.0"
   author-meta: "NOAA Fisheries"
-  mainfont: ["Fira Sans", "Arial", "sans-serif"]    # Updated with modern sans-serif fallback
+  mainfont: ["Fira Sans", "Arial", "sans-serif"]    # Modern fonts with fallback
   sansfont: ["Fira Sans", "Arial", "sans-serif"]
   monofont: "Courier New"
   papersize: letter
