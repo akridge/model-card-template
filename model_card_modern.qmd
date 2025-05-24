@@ -20,7 +20,7 @@ format:
         \usepackage{fancyhdr}
         \usepackage{graphicx}
         \usepackage{geometry}
-    mainfont: "Latin Modern Sans"   # Guaranteed to work with XeLaTeX/TinyTeX
+    mainfont: "Lato"
     geometry:
       - paperwidth=8.5in
       - paperheight=11in
