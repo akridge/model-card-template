@@ -1,0 +1,22 @@
+body {
+  font-family: 'Helvetica Neue', sans-serif;
+  background-color: #f0f8ff;
+  color: #333;
+}
+
+h1, h2, h3 {
+  color: #005CB9;
+}
+
+a {
+  color: #0077B6;
+}
+
+.cover {
+  background-color: #CFE5FF;
+  color: #005CB9;
+}
+
+.cover img {
+  max-width: 200px;
+}
