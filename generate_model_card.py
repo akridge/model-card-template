@@ -21,8 +21,16 @@ def create_model_card(data_filename="model_card_data.json", output_filename="mod
         print(f"Error: Data file '{data_filename}' not found.")
         return
 
-    with open(data_filename, 'r', encoding='utf-8') as f:
-        data = json.load(f)
+    try:
+        with open(data_filename, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON from '{data_filename}': {e}")
+        return
+    except Exception as e:
+        print(f"An unexpected error occurred while reading '{data_filename}': {e}")
+        return
+
 
     # Extract image paths and other fixed data from the JSON
     logo_path = data['image_paths']['logo']
@@ -40,18 +48,15 @@ def create_model_card(data_filename="model_card_data.json", output_filename="mod
     BACKGROUND_WHITE = white
 
     # Custom paragraph styles for a modern look
-    # --- START OF FIX ---
-    # Instead of adding a new 'Heading1' style, we MODIFY the existing 'h1' style
-    # 'h1' is the internal key for the 'Heading1' style in ReportLab's sample stylesheet
+    # MODIFY the existing 'h1' style directly (internal name for 'Heading1')
     styles['h1'].fontName = 'Helvetica-Bold'
     styles['h1'].fontSize = 24
     styles['h1'].leading = 28
     styles['h1'].alignment = TA_CENTER
     styles['h1'].textColor = NOAA_BLUE_DARK
     styles['h1'].spaceAfter = 12
-    # --- END OF FIX ---
 
-    # Add other custom styles (these are fine as they likely don't conflict with defaults)
+    # Add other custom styles
     styles.add(ParagraphStyle(name='Heading2', fontName='Helvetica-Bold', fontSize=14,
                               leading=16, textColor=NOAA_BLUE_DARK, spaceAfter=6))
     styles.add(ParagraphStyle(name='BodyText', fontName='Helvetica', fontSize=10,

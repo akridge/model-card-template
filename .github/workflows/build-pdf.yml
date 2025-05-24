@@ -5,7 +5,8 @@ on:
     branches:
       - main # Or your default branch like 'master'
     paths:
-      - 'build_card.py'
+      - 'generate_model_card.py'
+      - 'model_card_data.json'
       - 'requirements.txt'
       - '*.png' # Trigger if any image files are changed
   workflow_dispatch: # Allows manual triggering from GitHub UI
@@ -29,7 +30,8 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run model card generator
-      run: python build_card.py
+      # The script now defaults to model_card_data.json, no need to pass paths
+      run: python generate_model_card.py
 
     - name: Upload generated PDF
       uses: actions/upload-artifact@v4

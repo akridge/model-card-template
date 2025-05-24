@@ -1,7 +1,7 @@
 {
   "model_name": "Fish Detection Model v1.0",
   "plain_language_summary": [
-    "Finds **≈8 of 10** fish in a frame",
+    "Finds **≈9 of 10** fish in a frame",
     "**Rarely** confuses coral/rocks for fish",
     "Slide the confidence slider → right to cut *false positives* <br/>&nbsp;&nbsp;(you’ll skip a few shy fish)"
   ],
@@ -30,14 +30,14 @@
   "quote": "“<i>All models are wrong, some are useful.</i>”",
   "disclaimer": "Trained on expert-labelled images – humans <font face='Helvetica-Bold'>and</font> models make mistakes.<br/>Use results as a helpful <font face='Helvetica-Bold'>preview</font>, not the final answer.",
   "footer_info": {
-    "version": "v1.0",
+    "version": "1.0",
     "year": "2025",
     "organization": "NOAA / CIMAR",
     "contact_email": "test@noaa.gov"
   },
   "image_paths": {
-    "logo": "./assets/NOAA_FISHERIES_logoH_web.png",
-    "detection_example": "./assets/example_detection.png",
-    "pr_curve": "./assets/example_PR_curve.png"
+    "logo": "NOAA_FISHERIES_logoH_web.png",
+    "detection_example": "example_detection.png",
+    "pr_curve": "example_PR_curve.png"
   }
 }
