@@ -54,7 +54,7 @@ jobs:
 
       # 7) Upload the PDF as an artifact so you can download it
       - name: Upload PDF artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: model-card-pdf        # a friendly artifact name
           path: _output/*.pdf         # ← this is required!
