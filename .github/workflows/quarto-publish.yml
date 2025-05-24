@@ -19,12 +19,13 @@ jobs:
           version: '1.7.31'
           tinytex: true
 
-      - name: Install TeX Gyre Fonts (includes TeX Gyre Heros)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends texlive-fonts-extra
+      - name: Cache TinyTeX
+        uses: actions/cache@v3
+        with:
+          path: ~/.TinyTeX
+          key: ${{ runner.os }}-tinytex-${{ hashFiles('**/*.qmd') }}
 
-      - name: Clone Quarto Extension (quarto_titlepages)
+      - name: Clone Quarto Extension (titlepages)
         run: |
           git clone --depth=1 https://github.com/nmfs-opensci/quarto_titlepages.git
           mkdir -p _extensions/titlepage
