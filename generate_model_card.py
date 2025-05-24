@@ -48,7 +48,10 @@ def create_model_card(data_filename="model_card_data.json", output_filename="mod
     BACKGROUND_WHITE = white
 
     # Custom paragraph styles for a modern look
-    # MODIFY the existing 'h1' style directly (internal name for 'Heading1')
+    # IMPORTANT FIX: Modify existing default styles instead of adding them if they already exist.
+    # 'h1', 'h2', and 'BodyText' are common default names in getSampleStyleSheet().
+
+    # Modify 'Heading1' (internal name 'h1')
     styles['h1'].fontName = 'Helvetica-Bold'
     styles['h1'].fontSize = 24
     styles['h1'].leading = 28
@@ -56,11 +59,21 @@ def create_model_card(data_filename="model_card_data.json", output_filename="mod
     styles['h1'].textColor = NOAA_BLUE_DARK
     styles['h1'].spaceAfter = 12
 
-    # Add other custom styles
-    styles.add(ParagraphStyle(name='Heading2', fontName='Helvetica-Bold', fontSize=14,
-                              leading=16, textColor=NOAA_BLUE_DARK, spaceAfter=6))
-    styles.add(ParagraphStyle(name='BodyText', fontName='Helvetica', fontSize=10,
-                              leading=12, textColor=NOAA_BLUE_DARK, spaceAfter=3))
+    # Modify 'Heading2' (internal name 'h2')
+    styles['h2'].fontName = 'Helvetica-Bold'
+    styles['h2'].fontSize = 14
+    styles['h2'].leading = 16
+    styles['h2'].textColor = NOAA_BLUE_DARK
+    styles['h2'].spaceAfter = 6
+
+    # Modify 'BodyText' (internal name 'BodyText')
+    styles['BodyText'].fontName = 'Helvetica'
+    styles['BodyText'].fontSize = 10
+    styles['BodyText'].leading = 12
+    styles['BodyText'].textColor = NOAA_BLUE_DARK
+    styles['BodyText'].spaceAfter = 3
+
+    # Add other custom styles (these are less likely to conflict with default names)
     styles.add(ParagraphStyle(name='ListItem', fontName='Helvetica', fontSize=10,
                               leading=12, textColor=NOAA_BLUE_DARK, spaceBefore=0, spaceAfter=0,
                               leftIndent=18, bulletIndent=0, bulletFontSize=10, bulletFontName='Helvetica'))
@@ -81,15 +94,18 @@ def create_model_card(data_filename="model_card_data.json", output_filename="mod
     # Spacer to adjust for logo and top margin, ensuring content starts below header
     left_column_content.append(Spacer(1, 1.0 * inch)) # Increased space for header bar and logo
 
-    left_column_content.append(Paragraph("In plain language", styles['Heading2']))
+    # Use the modified 'h2' style
+    left_column_content.append(Paragraph("In plain language", styles['h2']))
     for item in data['plain_language_summary']:
         left_column_content.append(Paragraph(f"• {item}", styles['ListItem'], bulletText=""))
     left_column_content.append(Spacer(1, 0.2 * inch))
 
+    # Use the modified 'BodyText' style for separator
     left_column_content.append(Paragraph("---", styles['BodyText'])) # Separator
     left_column_content.append(Spacer(1, 0.1 * inch))
 
-    left_column_content.append(Paragraph("Key numbers", styles['Heading2']))
+    # Use the modified 'h2' style
+    left_column_content.append(Paragraph("Key numbers", styles['h2']))
     key_numbers_data = [['Metric', 'Value', 'What it means']] # Header row
     for item in data['key_numbers']:
         key_numbers_data.append([item['metric'], item['value'], item['meaning']])
@@ -116,6 +132,7 @@ def create_model_card(data_filename="model_card_data.json", output_filename="mod
     ]))
     left_column_content.append(key_numbers_table)
     left_column_content.append(Spacer(1, 0.2 * inch))
+    # Use the modified 'BodyText' style for separator
     left_column_content.append(Paragraph("---", styles['BodyText'])) # Separator
     left_column_content.append(Spacer(1, 0.1 * inch))
 
@@ -125,7 +142,8 @@ def create_model_card(data_filename="model_card_data.json", output_filename="mod
     # Spacer to align with left column content start
     right_column_content.append(Spacer(1, 1.0 * inch))
 
-    right_column_content.append(Paragraph("Tune the confidence threshold", styles['Heading2']))
+    # Use the modified 'h2' style
+    right_column_content.append(Paragraph("Tune the confidence threshold", styles['h2']))
     tune_threshold_data = [
         [item['threshold'] for item in data['confidence_thresholds']],
         [item['description'] for item in data['confidence_thresholds']]
@@ -176,6 +194,7 @@ def create_model_card(data_filename="model_card_data.json", output_filename="mod
         print(f"Warning: PR curve image not found at {pr_curve_path}")
 
     right_column_content.append(Paragraph(data['quote'], styles['Quote']))
+    # Use the modified 'BodyText' style
     right_column_content.append(Paragraph(data['disclaimer'], styles['BodyText']))
     right_column_content.append(Spacer(1, 0.2 * inch))
 
