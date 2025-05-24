@@ -15,8 +15,6 @@ jobs:
 
       - name: Set up Quarto
         uses: quarto-actions/setup-quarto@v2
-        with:
-          version: 'latest'
 
       - name: Install TeX Live (APT)
         run: |
