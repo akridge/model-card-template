@@ -1,4 +1,3 @@
-# .github/workflows/render-modelcard.yml
 name: Build one-page Model Card PDF
 
 on:
@@ -12,28 +11,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1) install Quarto CLI
+      # 1 Install Quarto CLI
       - uses: quarto-dev/quarto-actions/setup@v2
         with:
           version: "latest"
 
-      # 2) **fix:** install TeX Live (v3 tag!)
-      - name: Setup TeX Live
-        uses: teatimeguest/setup-texlive-action@v3    # ← was @v2
-        with:
-          # enough for xelatex + common packages; tweak if you need more
-          packages: |
-            scheme-small
-            xetex
-            fontspec
-            sectsty
-            xcolor
-            geometry
+      # 2 Install TinyTeX and Source Sans Pro font
+      - name: Install TinyTeX & fonts
+        run: |
+          quarto install tinytex --no-prompt
+          sudo apt-get update
+          sudo apt-get install -y fonts-source-sans-pro
 
-      # 3) render PDF only
-      - run: quarto render example_model_card.qmd --to pdf
+      # 3 Render PDF
+      - name: Render model card
+        run: |
+          quarto render example_model_card.qmd --to pdf
 
-      # 4) upload artefact
+      # 4 Upload artifact
       - uses: actions/upload-artifact@v4
         with:
           name: fish-detector-card
