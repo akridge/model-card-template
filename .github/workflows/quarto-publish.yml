@@ -19,6 +19,11 @@ jobs:
           version: '1.7.31'
           tinytex: true
 
+      - name: Install Nimbus Sans font (Helvetica equivalent)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-fonts-recommended
+
       - name: Clone Quarto Extension (quarto_titlepages)
         run: |
           git clone --depth=1 https://github.com/nmfs-opensci/quarto_titlepages.git
