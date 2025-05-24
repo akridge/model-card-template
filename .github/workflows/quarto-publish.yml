@@ -25,11 +25,6 @@ jobs:
           path: ~/.TinyTeX
           key: ${{ runner.os }}-tinytex-${{ hashFiles('**/*.qmd') }}
 
-      - name: Install Fira Sans system font
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y fonts-fira-sans
-
       - name: Debug Available Fonts (Optional)
         run: |
           fc-list : family | sort
