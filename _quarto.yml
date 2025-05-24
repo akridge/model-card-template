@@ -6,8 +6,8 @@ project:
 
 metadata:
   lang: en
-  mainfont: Helvetica
-  sansfont: Helvetica
+  mainfont: "Nimbus Sans"
+  sansfont: "Nimbus Sans"
   monofont: "Courier New"
   papersize: letter
   geometry:
