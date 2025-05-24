@@ -1,22 +1,39 @@
+
+---
+
+## 📂 **assets/style.css**
+```css
 body {
-  font-family: 'Helvetica Neue', sans-serif;
-  background-color: #f0f8ff;
+  font-family: "Lato", sans-serif;
+  background-color: #f7fbff;
   color: #333;
 }
 
 h1, h2, h3 {
-  color: #005CB9;
-}
-
-a {
-  color: #0077B6;
+  color: #003366;
 }
 
 .cover {
   background-color: #CFE5FF;
-  color: #005CB9;
+  color: #003366;
+  text-align: center;
 }
 
 .cover img {
   max-width: 200px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background-color: #003366;
+  color: white;
+}
+
+td, th {
+  border: 1px solid #ccc;
+  padding: 0.5em;
 }
