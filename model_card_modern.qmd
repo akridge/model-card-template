@@ -1,174 +1,73 @@
+
 ---
 title: "Fish Detection Model v1.0"
 subtitle: "Model Card"
 version: "1.0.0"
 date: today
-format: 
-  titlepage-pdf:
-    documentclass: scrbook
-    classoption: ["oneside", "openany"]
-    number-sections: false
-    toc: false
-    include-in-header: 
-      text: |
-        \usepackage{xcolor}
-        \definecolor{noaablue}{HTML}{003366}
-        \definecolor{noaalightblue}{HTML}{336699}
-        \definecolor{lightgray}{HTML}{F6F8FA}
-        \usepackage{tcolorbox}
-        \tcbuselibrary{skins}
-        \usepackage{fancyhdr}
-        \usepackage{graphicx}
-        \usepackage{geometry}
-    mainfont: "Lato"
-    geometry:
-      - paperwidth=8.5in
-      - paperheight=11in
-      - margin=0.75in
-    fontsize: 10pt
-    colorlinks: true
+format:
+  pdf:
+    css: assets/style.css
 ---
 
+# Overview
 
 ```{=tex}
-\begin{tcolorbox}[
-  enhanced,
-  colback=lightgray,
-  colframe=noaablue,
-  arc=3mm,
-  boxrule=0.5pt,
-  left=5pt,
-  right=5pt,
-  top=5pt,
-  bottom=5pt
-]
+\begin{tcolorbox}[colback=lightgray, colframe=noaablue, arc=3mm, boxrule=0.5pt, enhanced]
 ```
-# Model Summary {.unnumbered}
 
-:::: {.columns}
+## Purpose
+- Automated fish detection and counting in underwater videos.
 
-::: {.column width="48%"}
-## Quick Overview
+## Key Details
+- **Architecture**: YOLO11
+- **Input**: 1920x1080 RGB
+- **Output**: Bounding boxes and scores
+- **Training**: 1000 expert-labeled frames
 
-* **Purpose**: Detect and count fish in underwater video frames
-* **Primary Users**: Marine biologists, fisheries researchers
-* **Use Case**: Automated fish population monitoring
-* **Key Performance**: ≈9 of 10 fish detected, rare false positives
+## Performance
+| Metric    | Value |
+|-----------|-------|
+| Precision | 0.885 |
+| Recall    | 0.861 |
+| mAP@0.5   | 0.937 |
 
-## Technical Details
-* **Architecture**: YOLO11 backbone
-* **Input**: 1920x1080 RGB frames
-* **Output**: Bounding boxes with confidence scores
-* **Training Data**: 1000 expert-labeled frames
-:::
+![](assets/example_detection.png){width=90%}
 
-::: {.column width="4%"}
-:::
-
-::: {.column width="48%"}
-## Performance Metrics
-
-| Metric    | Value | Description |
-|-----------|------:|-------------|
-| Precision | **0.885** | Share of detections that are real fish |
-| Recall    | **0.861** | Share of all fish that are found |
-| mAP@0.5   | **0.937** | Combined quality score |
-
-## Sample Output
-![](assets/example_detection.png){width=100%}
-:::
-
-::::
 ```{=tex}
 \end{tcolorbox}
 ```
 
 # Model Details
 
-## Intended Use
+## Use Cases
+- Fish population monitoring  
+- Density estimation  
+- Species tracking
 
-::: {.columns}
-::: {.column width="48%"}
-### Primary Uses
-* Automated fish counting in underwater videos
-* Population density estimation
-* Species distribution monitoring
-* Long-term ecosystem health tracking
+## Constraints
+- Works best in clear, daylight footage  
+- Needs confidence threshold tuning (default: 0.5)
 
-### Out-of-Scope Uses
-* Commercial fishing targeting
-* Real-time navigation
-* Species identification (not trained for this)
-:::
+![](assets/example_PR_curve.png){width=90%}
 
-::: {.column width="4%"}
-:::
+# Confidence Settings
 
-::: {.column width="48%"}
-### Usage Guidelines
-* Best for clear water conditions
-* Optimal for daylight footage
-* Process frame-by-frame for best results
-* Use confidence threshold of 0.5 for balanced results
+| Setting        | Threshold |
+|----------------|-----------|
+| High Precision | 0.8 |
+| Balanced       | 0.5 |
+| High Recall    | 0.2 |
 
-![](assets/example_PR_curve.png){width=100%}
-:::
-:::
+# Limitations
+- Struggles in turbid water or low light  
+- Dataset biased toward Pacific Northwest
 
-## Confidence Thresholds
+# Governance
+- Version: 1.0.0  
+- Released: 2025-05-23  
+- Maintainers: NOAA Fisheries, CIMAR  
 
-| Setting | Threshold | Use Case | Trade-off |
-|---------|-----------|----------|-----------|
-| High Precision | 0.80 | When false positives are costly | Miss some fish |
-| Balanced | 0.50 | General purpose monitoring | Best overall performance |
-| High Recall | 0.20 | When missing fish is costly | More false positives |
-
-## Limitations & Biases
-
-* **Environmental Conditions**
-  - Performance degrades in turbid water
-  - Reduced accuracy in low-light conditions
-  - May struggle with dense fish schools
-
-* **Technical Constraints**
-  - Maximum processing rate: 30fps
-  - Minimum resolution: 720p
-  - GPU required for real-time processing
-
-* **Dataset Biases**
-  - Training data from Pacific Northwest waters
-  - Daylight conditions over-represented
-  - Limited seasonal variation
-
-## Model Governance
-
-::: {.columns}
-::: {.column width="48%"}
-### Model Details
-* Version: 1.0.0
-* Release Date: 2025-05-23
-* Last Updated: 2025-05-23
-* License: CC-BY 4.0
-
-### Maintainers
-* NOAA Fisheries
-* CIMAR Research Group
-:::
-
-::: {.column width="4%"}
-:::
-
-::: {.column width="48%"}
-### Updates & Support
-* Retraining schedule
-* Bug reports: [GitHub Issues](https://github.com/noaa-fisheries/fish-detection/issues)
-* Documentation: [Project Wiki](https://github.com/noaa-fisheries/fish-detection/wiki)
-
-### Contact
-Technical Support: [test@noaa.gov](mailto:test@noaa.gov)
-:::
-:::
-
-::: {.footer}
-v1.0 · © 2025 NOAA / CIMAR · [test@noaa.gov](mailto:test@noaa.gov)
-:::
+## Support
+- [Issues](https://github.com/noaa-fisheries/fish-detection/issues)  
+- [Wiki](https://github.com/noaa-fisheries/fish-detection/wiki)  
+- Contact: [test@noaa.gov](mailto:test@noaa.gov)
