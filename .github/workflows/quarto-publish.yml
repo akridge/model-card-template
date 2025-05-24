@@ -18,12 +18,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          version: 'latest'
-          tinytex: true       # ← installs TinyTeX via `quarto install tool tinytex`
+          version: '1.7.31'    # pin to a released version (not “latest”) :contentReference[oaicite:0]{index=0}
+          tinytex: true        # installs TinyTeX via Quarto
 
       - name: Render PDF
-        run: |
-          quarto render model_card_modern.qmd --to pdf
+        run: quarto render model_card_modern.qmd --to pdf
 
       - name: List generated PDF
         run: ls -lah _output
