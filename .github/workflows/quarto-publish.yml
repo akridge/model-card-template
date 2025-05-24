@@ -18,21 +18,47 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    container:
+      image: ghcr.io/quarto-dev/quarto:latest
+    
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Quarto
-        uses: quarto-dev/quarto-actions/setup@v2
+      - name: Cache TinyTeX
+        uses: actions/cache@v4
         with:
-          version: pre-release
+          path: ~/.TinyTeX
+          key: tinytex-${{ runner.os }}-${{ hashFiles('**/model_card_modern.qmd') }}
+          restore-keys: |
+            tinytex-${{ runner.os }}-
 
-      - name: Install Dependencies
+      - name: Install minimal TeX dependencies
         run: |
-          quarto install tool tinytex
-          quarto install extension quarto-journals/elsevier
-          sudo apt-get update
-          sudo apt-get install -y fonts-liberation
+          # Only install if cache miss
+          if [ ! -d ~/.TinyTeX ]; then
+            echo "Installing TinyTeX..."
+            quarto install tool tinytex --no-prompt
+            
+            # Install only required packages
+            tlmgr install \
+              xelatex \
+              geometry \
+              fancyhdr \
+              graphicx \
+              xcolor \
+              tcolorbox \
+              fontspec \
+              helvetic
+          fi
+          
+          # Always install extensions
+          quarto install extension quarto-journals/elsevier --no-prompt
+
+      - name: Install system fonts
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends fonts-liberation
           
       - name: Render Quarto Project
         uses: quarto-dev/quarto-actions/render@v2
