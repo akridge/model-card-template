@@ -1,10 +1,13 @@
 name: Render Model Card PDF
+
 on:
   push:
     branches: [ main ]
+
 jobs:
   render-pdf:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
 
@@ -16,21 +19,11 @@ jobs:
           version: '1.7.31'
           tinytex: true
 
-      - name: Clone quarto_titlepages extension
+      - name: Clone Quarto Extension (quarto_titlepages)
         run: |
-          mkdir -p _extensions/nmfs-opensci
-          git clone --depth 1 --filter=blob:none --sparse https://github.com/nmfs-opensci/quarto_titlepages.git _extensions/nmfs-opensci/quarto_titlepages
-          cd _extensions/nmfs-opensci/quarto_titlepages
-          git sparse-checkout init --cone
-          git sparse-checkout set _extension
-          mv _extension/* .
-          rm -rf _extension .git
-          cd ../../../..
-
-      - name: Copy extension files for Quarto
-        run: |
+          git clone --depth=1 https://github.com/nmfs-opensci/quarto_titlepages.git
           mkdir -p _extensions/titlepage
-          cp -r temp_quarto_titlepages/_extensions/titlepage/* _extensions/titlepage
+          cp -r quarto_titlepages/_extensions/titlepage/* _extensions/titlepage/
 
       - name: Render PDF
         run: |
