@@ -1,108 +1,233 @@
-#!/usr/bin/env python3
-"""
-Generate a one-page, two-column model card PDF.
-Assets expected in ./assets/ (or change paths below).
-"""
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.colors import HexColor, white
+import os
 
-from pathlib import Path
-import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch, Rectangle
-from PIL import Image, ImageDraw
+def create_model_card(output_filename="model_card.pdf", logo_path="NOAA_FISHERIES_logoH_web.png",
+                      detection_image_path="example_detection.png", pr_curve_path="example_PR_curve.png"):
+    """
+    Generates a PDF model card for an AI model.
 
-ROOT   = Path(__file__).parent
-ASSETS = ROOT / "assets"
-DETECT = ASSETS / "example_detection.png"
-PRCURV = ASSETS / "example_PR_curve.png"
-OUTPDF = ROOT / "fish_detector_card.pdf"
+    Args:
+        output_filename (str): The name of the output PDF file.
+        logo_path (str): Path to the NOAA Fisheries logo image.
+        detection_image_path (str): Path to the example detection image.
+        pr_curve_path (str): Path to the Precision-Recall curve image.
+    """
+    doc = SimpleDocTemplate(output_filename, pagesize=letter,
+                            rightMargin=0.5*inch, leftMargin=0.5*inch,
+                            topMargin=0.5*inch, bottomMargin=0.5*inch)
+    styles = getSampleStyleSheet()
 
-# --------------------------------------------------------------------------- helpers
-def safe_open(path, size=(640, 400), label="image\nmissing"):
-    if path.exists():
-        return Image.open(path)
-    ph = Image.new("RGB", size, (200, 200, 200))
-    d  = ImageDraw.Draw(ph)
-    w, h = d.textsize(label)
-    d.text(((size[0]-w)/2, (size[1]-h)/2), label, fill=(70, 70, 70), align="center")
-    return ph
+    # Define custom colors for NOAA branding
+    NOAA_BLUE_DARK = HexColor("#003366")
+    NOAA_BLUE_LIGHT = HexColor("#336699")
+    BACKGROUND_WHITE = white
 
-# --------------------------------------------------------------------------- canvas
-plt.rcParams.update({
-    "font.family": "sans-serif",
-    "font.size":   10,
-    "axes.facecolor": "#005CB9"        # NOAA blue backdrop
-})
+    # Custom paragraph styles for a modern look
+    styles.add(ParagraphStyle(name='Heading1', fontName='Helvetica-Bold', fontSize=24,
+                              leading=28, alignment=TA_CENTER, textColor=NOAA_BLUE_DARK, spaceAfter=12))
+    styles.add(ParagraphStyle(name='Heading2', fontName='Helvetica-Bold', fontSize=14,
+                              leading=16, textColor=NOAA_BLUE_DARK, spaceAfter=6))
+    styles.add(ParagraphStyle(name='BodyText', fontName='Helvetica', fontSize=10,
+                              leading=12, textColor=NOAA_BLUE_DARK, spaceAfter=3))
+    styles.add(ParagraphStyle(name='ListItem', fontName='Helvetica', fontSize=10,
+                              leading=12, textColor=NOAA_BLUE_DARK, spaceBefore=0, spaceAfter=0,
+                              leftIndent=18, bulletIndent=0, bulletFontSize=10, bulletFontName='Helvetica'))
+    styles.add(ParagraphStyle(name='Quote', fontName='Helvetica-Oblique', fontSize=10,
+                              leading=12, textColor=NOAA_BLUE_DARK, spaceBefore=6, spaceAfter=6,
+                              alignment=TA_CENTER))
+    styles.add(ParagraphStyle(name='Footer', fontName='Helvetica', fontSize=8,
+                              leading=10, alignment=TA_CENTER, textColor=NOAA_BLUE_DARK,
+                              linkAndMouseDefs='<link href="mailto:test@noaa.gov" color="blue">test@noaa.gov</link>'))
 
-fig, ax = plt.subplots(figsize=(8.5, 11))
-ax.axis("off")
 
-# White rounded card
-card = FancyBboxPatch((0.05, 0.05), 0.90, 0.90,
-                      boxstyle="round,pad=0.02,rounding_size=0.02",
-                      facecolor="white", linewidth=0,
-                      transform=ax.transAxes)
-ax.add_patch(card)
+    story = []
 
-# Header ribbon
-ax.add_patch(Rectangle((0.05, 0.88), 0.90, 0.07, transform=ax.transAxes,
-                       facecolor="#005CB9", linewidth=0))
-ax.text(0.5, 0.915, "YOLO-v11 Fish Detector — Model Card",
-        ha="center", va="center", transform=ax.transAxes,
-        color="white", fontsize=22, weight="bold")
+    # --- Content for the left column ---
+    left_column_content = []
 
-# --------------------------------------------------------------------------- full-width image row
-ax_img1 = fig.add_axes([0.08, 0.68, 0.40, 0.17])
-ax_img1.imshow(safe_open(DETECT))
-ax_img1.axis("off")
+    # Spacer to adjust for logo and top margin, ensuring content starts below header
+    left_column_content.append(Spacer(1, 1.0 * inch)) # Increased space for header bar and logo
 
-ax_img2 = fig.add_axes([0.52, 0.68, 0.40, 0.17])
-ax_img2.imshow(safe_open(PRCURV))
-ax_img2.axis("off")
+    left_column_content.append(Paragraph("In plain language", styles['Heading2']))
+    left_column_content.append(Paragraph("• Finds <font face='Helvetica-Bold'>≈9 of 10</font> fish in a frame", styles['ListItem'], bulletText=""))
+    left_column_content.append(Paragraph("• <font face='Helvetica-Bold'>Rarely</font> confuses coral/rocks for fish", styles['ListItem'], bulletText=""))
+    left_column_content.append(Paragraph("• Slide the confidence slider → right to cut <i>false positives</i><br/>&nbsp;&nbsp;(you’ll skip a few shy fish)", styles['ListItem'], bulletText=""))
+    left_column_content.append(Spacer(1, 0.2 * inch))
 
-# --------------------------------------------------------------------------- LEFT column  (bullets)
-left_x  = 0.08
-right_x = 0.52           # start of right column
-col_w   = 0.40
+    left_column_content.append(Paragraph("---", styles['BodyText'])) # Separator
+    left_column_content.append(Spacer(1, 0.1 * inch))
 
-bullets = (
-    "• Finds ≈ 9 of 10 fish per frame\n"
-    "• Rarely confuses coral or rocks for fish\n"
-    "• Move the confidence slider → right to cut false positives\n"
-    "  (you’ll skip a few shy fish)"
-)
-ax.text(left_x, 0.59, bullets, transform=ax.transAxes,
-        fontsize=11, va="top")
+    left_column_content.append(Paragraph("Key numbers", styles['Heading2']))
+    key_numbers_data = [
+        ['Metric', 'Value', 'What it means'],
+        ['Precision', '<b>0.885</b>', 'Share of detections that are real fish'],
+        ['Recall', '<b>0.861</b>', 'Share of all fish that are found'],
+        ['mAP@0.5', '<b>0.937</b>', 'Combined quality score']
+    ]
+    # Adjust column widths for better fit
+    key_numbers_table = Table(key_numbers_data, colWidths=[1.2*inch, 0.8*inch, 2.5*inch])
+    key_numbers_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), NOAA_BLUE_LIGHT),
+        ('TEXTCOLOR', (0, 0), (-1, 0), white),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('ALIGN', (1, 1), (1, -1), 'RIGHT'), # Align values to the right
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+        ('BACKGROUND', (0, 1), (-1, -1), BACKGROUND_WHITE),
+        ('GRID', (0, 0), (-1, -1), 0.5, NOAA_BLUE_LIGHT),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING', (0, 0), (-1, -1), 4),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 4),
+        ('TOPPADDING', (0, 0), (-1, -1), 3),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+    ]))
+    left_column_content.append(key_numbers_table)
+    left_column_content.append(Spacer(1, 0.2 * inch))
+    left_column_content.append(Paragraph("---", styles['BodyText'])) # Separator
+    left_column_content.append(Spacer(1, 0.1 * inch))
 
-# --------------------------------------------------------------------------- RIGHT column  (metrics + threshold)
-metrics = (
-    "Metric      Value   Meaning\n"
-    "Precision   0.885   Share of detections that are real fish\n"
-    "Recall      0.861   Share of all fish that are found\n"
-    "mAP@0.5     0.937   Combined quality score"
-)
-ax.text(right_x, 0.59, metrics, transform=ax.transAxes,
-        family="monospace", fontsize=10, va="top")
+    # --- Content for the right column ---
+    right_column_content = []
 
-thr = (
-    "\nConfidence threshold:\n"
-    "  0.20  Catch everything\n"
-    "  0.50  Balanced (default)\n"
-    "  0.80  Only sure hits"
-)
-ax.text(right_x, 0.45, thr, transform=ax.transAxes,
-        fontsize=10, va="top")
+    # Spacer to align with left column content start
+    right_column_content.append(Spacer(1, 1.0 * inch))
 
-# --------------------------------------------------------------------------- shared bottom section
-ax.text(0.08, 0.32, "“All models are wrong, some are useful.”",
-        transform=ax.transAxes, fontsize=11, style="italic")
+    right_column_content.append(Paragraph("Tune the confidence threshold", styles['Heading2']))
+    tune_threshold_data = [
+        ['0.20', '0.50 <i>(default)</i>', '0.80'],
+        ['Catch <i>everything</i>', 'Balanced', 'Only sure hits']
+    ]
+    # Adjust column widths for better fit
+    tune_threshold_table = Table(tune_threshold_data, colWidths=[1.7*inch, 1.7*inch, 1.7*inch])
+    tune_threshold_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BACKGROUND', (1, 0), (1, 0), NOAA_BLUE_LIGHT), # Highlight default column header
+        ('TEXTCOLOR', (1, 0), (1, 0), white),
+        ('BACKGROUND', (0, 1), (-1, 1), BACKGROUND_WHITE),
+        ('GRID', (0, 0), (-1, -1), 0.5, NOAA_BLUE_LIGHT),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING', (0, 0), (-1, -1), 2),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 2),
+        ('TOPPADDING', (0, 0), (-1, -1), 3),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+    ]))
+    right_column_content.append(tune_threshold_table)
+    right_column_content.append(Spacer(1, 0.2 * inch))
 
-disc = ("Trained on expert-labelled images – humans **and** models err.\n"
-        "Use results as a helpful preview, not the final answer.")
-ax.text(0.08, 0.26, disc, transform=ax.transAxes, fontsize=10, va="top")
+    # Example detection image
+    if os.path.exists(detection_image_path):
+        img_detection = Image(detection_image_path)
+        img_width = 4.5 * inch # Max width for the column
+        img_height = img_detection.drawHeight * (img_width / img_detection.drawWidth)
+        img_detection.drawWidth = img_width
+        img_detection.drawHeight = img_height
+        right_column_content.append(img_detection)
+        right_column_content.append(Spacer(1, 0.1 * inch))
+    else:
+        print(f"Warning: Detection image not found at {detection_image_path}")
 
-# Footer
-ax.text(0.5, 0.11,
-        "v1.0 · © 2025 NOAA / CIMAR · Questions: ai4me@noaa.gov",
-        transform=ax.transAxes, ha="center", fontsize=9)
+    # Precision-Recall curve image
+    if os.path.exists(pr_curve_path):
+        img_pr = Image(pr_curve_path)
+        img_width = 4.5 * inch # Max width for the column
+        img_height = img_pr.drawHeight * (img_width / img_pr.drawWidth)
+        img_pr.drawWidth = img_width
+        img_pr.drawHeight = img_height
+        right_column_content.append(img_pr)
+        right_column_content.append(Spacer(1, 0.1 * inch))
+    else:
+        print(f"Warning: PR curve image not found at {pr_curve_path}")
 
-fig.savefig(OUTPDF, bbox_inches="tight")
-print(f"✓ wrote {OUTPDF}")
+    right_column_content.append(Paragraph("“<i>All models are wrong, some are useful.</i>”", styles['Quote']))
+    right_column_content.append(Paragraph("Trained on expert-labelled images – humans <font face='Helvetica-Bold'>and</font> models make mistakes.<br/>Use results as a helpful <font face='Helvetica-Bold'>preview</font>, not the final answer.", styles['BodyText']))
+    right_column_content.append(Spacer(1, 0.2 * inch))
+
+
+    # Use a single table to lay out the two columns side-by-side
+    # The sum of colWidths should be less than or equal to doc.width
+    # A small gap between columns for visual separation
+    column_gap = 0.2 * inch
+    col_width = (doc.width - column_gap) / 2.0
+
+    data = [[left_column_content, right_column_content]]
+    column_table = Table(data, colWidths=[col_width, col_width])
+    column_table.setStyle(TableStyle([
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('LEFTPADDING', (0, 0), (0, 0), 0),
+        ('RIGHTPADDING', (0, 0), (0, 0), column_gap / 2), # Padding for the left column
+        ('LEFTPADDING', (1, 0), (1, 0), column_gap / 2), # Padding for the right column
+        ('RIGHTPADDING', (1, 0), (1, 0), 0),
+    ]))
+    story.append(column_table)
+
+    # Add a final spacer before the footer to push it to the bottom
+    # This might require some trial and error depending on content length
+    story.append(Spacer(1, 0.5 * inch)) # Placeholder, adjusted by bottom margin in page_template
+
+
+    # Define the page template function for header, logo, and footer
+    def page_template(canvas, doc):
+        canvas.saveState()
+
+        # Background color for the entire page (white)
+        canvas.setFillColor(BACKGROUND_WHITE)
+        canvas.rect(0, 0, letter[0], letter[1], fill=1)
+
+        # Blue header bar at the top
+        header_height = 0.8 * inch # Height of the blue header bar
+        canvas.setFillColor(NOAA_BLUE_DARK)
+        canvas.rect(0, letter[1] - header_height, letter[0], header_height, fill=1)
+
+        # Draw a subtle blue line above the footer for visual separation
+        canvas.setStrokeColor(NOAA_BLUE_LIGHT)
+        canvas.setLineWidth(0.5)
+        # Position the line relative to the bottom margin
+        canvas.line(doc.leftMargin, doc.bottomMargin + 0.3*inch, letter[0] - doc.rightMargin, doc.bottomMargin + 0.3*inch)
+
+        # Logo on top left corner, within the blue header bar
+        if os.path.exists(logo_path):
+            logo = Image(logo_path)
+            logo_width = 1.0 * inch # Adjusted logo size
+            logo_height = logo.drawHeight * (logo_width / logo.drawWidth)
+            # Position logo inside the blue bar, with a small margin
+            canvas.drawImage(logo_path, doc.leftMargin, letter[1] - logo_height - (header_height - logo_height) / 2,
+                             width=logo_width, height=logo_height)
+        else:
+            print(f"Warning: Logo image not found at {logo_path}")
+
+        # Draw the footer text explicitly at the bottom center
+        footer_text = Paragraph("v1.0 • © 2025 NOAA / CIMAR • Questions: <a href='mailto:test@noaa.gov'><font color='blue'>test@noaa.gov</font></a>", styles['Footer'])
+        # Calculate footer position
+        footer_text_width = doc.width # We assume footer text fits in doc width
+        footer_text_height = footer_text.wrapOn(canvas, footer_text_width, doc.height)[1]
+        footer_y = doc.bottomMargin - 0.05 * inch # Position slightly above the bottom margin
+        footer_text.drawOn(canvas, doc.leftMargin, footer_y)
+
+
+        canvas.restoreState()
+
+    # Build the document using the story and the custom page template
+    doc.build(story, onAndAfterPage=page_template)
+    print(f"Model card '{output_filename}' created successfully.")
+
+if __name__ == "__main__":
+    # Ensure your image files are in the same directory as the script, or provide full paths
+    # When running with GitHub Actions, the files will be in the working directory
+    # so relative paths are appropriate.
+    create_model_card(
+        logo_path="NOAA_FISHERIES_logoH_web.png",
+        detection_image_path="example_detection.png",
+        pr_curve_path="example_PR_curve.png"
+    )
