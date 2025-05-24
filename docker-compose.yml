@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  model-card:
+    build: .
+    volumes:
+      - .:/workspace
+    command: quarto render --to pdf
+    environment:
+      - QUARTO_VERSION=pre-release
