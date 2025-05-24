@@ -1,97 +1,104 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
-Generate a one-page model card PDF with NOAA-blue styling.
+Generate a one-page PDF model card (fish_detector_card.pdf)
+Completely self-contained – just needs matplotlib + Pillow.
 """
 
 from pathlib import Path
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle, FancyBboxPatch
-import matplotlib.font_manager as fm
-from PIL import Image
+from matplotlib.patches import FancyBboxPatch, Rectangle
+from PIL import Image, ImageDraw
 
-ROOT = Path(__file__).parent
-ASSETS = ROOT / "assets"
-OUTFILE = ROOT / "fish_detector_card.pdf"
+ROOT    = Path(__file__).parent
+ASSETS  = ROOT / "assets"
+DETECT  = ASSETS / "example_detection.png"      # change path if needed
+PR_CURV = ASSETS / "example_PR_curve.png"
+OUTPDF  = ROOT / "fish_detector_card.pdf"
 
-# ---- basic canvas ----------------------------------------------------------
-plt.rcParams.update(
-    {
-        "font.family": "sans-serif",
-        "font.size": 10,
-        "axes.facecolor": "#005CB9",  # deep NOAA blue background
-    }
-)
+# ---------- helper ----------------------------------------------------------
+def safe_open(path, ph_size=(640, 400), label="image\nmissing"):
+    """Open image or return gray placeholder (never crash CI)."""
+    if path.exists():
+        return Image.open(path)
+    ph = Image.new("RGB", ph_size, (200, 200, 200))
+    d  = ImageDraw.Draw(ph)
+    w, h = d.textsize(label)
+    d.text(((ph_size[0]-w)/2, (ph_size[1]-h)/2), label, fill=(80, 80, 80),
+           align="center")
+    return ph
+
+# ---------- drawing ---------------------------------------------------------
+plt.rcParams.update({"font.family": "sans-serif",
+                     "font.size": 10,
+                     "axes.facecolor": "#005CB9"})          # NOAA blue
+
 fig, ax = plt.subplots(figsize=(8.5, 11))
 ax.axis("off")
 
-# ---- white card with rounded corners --------------------------------------
+# white rounded card
 card = FancyBboxPatch((0.05, 0.05), 0.90, 0.90,
                       boxstyle="round,pad=0.02,rounding_size=0.02",
-                      facecolor="white", transform=ax.transAxes)
+                      facecolor="white", linewidth=0,
+                      transform=ax.transAxes)
 ax.add_patch(card)
 
-# Convenience for placing things in Axes coordinates
-def A(x, y):
-    return ax.transAxes.transform((x, y))
-
-# ---- header ribbon --------------------------------------------------------
+# header ribbon
 ax.add_patch(Rectangle((0.05, 0.88), 0.90, 0.07,
-                       transform=ax.transAxes, color="#005CB9"))
-ax.text(0.5, 0.915, "YOLO-v11 Fish Detector – Model Card",
+                       transform=ax.transAxes,
+                       facecolor="#005CB9", linewidth=0))
+ax.text(0.5, 0.915, "YOLO-v11 Fish Detector — Model Card",
         ha="center", va="center", transform=ax.transAxes,
-        color="white", fontsize=20, weight="bold")
+        color="white", fontsize=22, weight="bold")
 
-# ---- images side by side ---------------------------------------------------
-left_img  = Image.open(ASSETS / "example_detection.png")
-right_img = Image.open(ASSETS / "example_PR_curve.png")
+# images (49 % width each, under ribbon)
+ax_left  = fig.add_axes([0.08, 0.67, 0.40, 0.17])
+ax_left.imshow(safe_open(DETECT))
+ax_left.axis("off")
 
-axfig1 = fig.add_axes([0.08, 0.66, 0.40, 0.18])
-axfig1.imshow(left_img)
-axfig1.axis("off")
+ax_right = fig.add_axes([0.52, 0.67, 0.40, 0.17])
+ax_right.imshow(safe_open(PR_CURV))
+ax_right.axis("off")
 
-axfig2 = fig.add_axes([0.52, 0.66, 0.40, 0.18])
-axfig2.imshow(right_img)
-axfig2.axis("off")
-
-# ---- plain-language bullets ------------------------------------------------
+# bullet section
 bullets = (
     "• Finds ≈9 of 10 fish in a frame\n"
     "• Rarely confuses coral or rocks for fish\n"
-    "• Slide the confidence slider → right to cut false positives\n"
+    "• Move the confidence slider → right to cut false positives\n"
     "  (you’ll skip a few shy fish)"
 )
-ax.text(0.08, 0.57, bullets, transform=ax.transAxes, fontsize=11, va="top")
+ax.text(0.08, 0.58, bullets, transform=ax.transAxes,
+        fontsize=11, va="top")
 
-# ---- key numbers table -----------------------------------------------------
+# key numbers table (monospace)
 metrics = (
     "Metric      Value   Meaning\n"
     "Precision   0.885   Share of detections that are real fish\n"
     "Recall      0.861   Share of all fish that are found\n"
     "mAP@0.5     0.937   Combined quality score"
 )
-ax.text(0.08, 0.45, metrics, transform=ax.transAxes, fontsize=10,
-        family="monospace", va="top")
+ax.text(0.08, 0.46, metrics, transform=ax.transAxes,
+        family="monospace", fontsize=10, va="top")
 
-# ---- threshold mini-table --------------------------------------------------
-threshold = (
+# threshold strip
+thresh = (
     "Tune the confidence threshold\n"
-    "0.20  Catch everything | 0.50  Balanced | 0.80  Only sure hits"
+    "0.20  Catch everything   |   0.50  Balanced   |   0.80  Only sure hits"
 )
-ax.text(0.08, 0.37, threshold, transform=ax.transAxes, fontsize=10, va="top")
+ax.text(0.08, 0.38, thresh, transform=ax.transAxes,
+        fontsize=10, va="top")
 
-# ---- aphorism + disclaimer -------------------------------------------------
-quote = "“All models are wrong, some are useful.”"
-ax.text(0.08, 0.28, quote, transform=ax.transAxes,
-        fontsize=11, style="italic")
-disc = ("Trained on expert-labelled images – humans and models both err.\n"
-        "Use results as a helpful preview, not the final answer.")
-ax.text(0.08, 0.23, disc, transform=ax.transAxes, fontsize=10, va="top")
+# aphorism & disclaimer
+ax.text(0.08, 0.30, "“All models are wrong, some are useful.”",
+        transform=ax.transAxes, fontsize=11, style="italic")
+ax.text(0.08, 0.25,
+        ("Trained on expert-labelled images – humans and models both err.\n"
+         "Use results as a helpful preview, not the final answer."),
+        transform=ax.transAxes, fontsize=10, va="top")
 
-# ---- footer ----------------------------------------------------------------
-footer = "v1.0 · © 2025 NOAA / CIMAR · Questions: ai4me@noaa.gov"
-ax.text(0.5, 0.10, footer, transform=ax.transAxes,
-        ha="center", fontsize=9)
+# footer
+ax.text(0.5, 0.11,
+        "v1.0 · © 2025 NOAA / CIMAR · Questions: ai4me@noaa.gov",
+        transform=ax.transAxes, ha="center", fontsize=9)
 
-# ---- output ----------------------------------------------------------------
-fig.savefig(OUTFILE, bbox_inches="tight")
-print(f"Wrote {OUTFILE}")
+fig.savefig(OUTPDF, bbox_inches="tight")
+print(f"✓ Wrote {OUTPDF}")
