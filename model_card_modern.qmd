@@ -1,10 +1,12 @@
 ---
 title: "Fish Detection Model v1.0"
 subtitle: "Model Card"
+version: "1.0.0"
+date: today
 format: 
   titlepage-pdf:
     documentclass: scrbook
-    classoption: ["oneside", "open=any"]
+    classoption: ["oneside", "openany"]
     number-sections: false
     toc: false
     include-in-header: 
@@ -15,7 +17,10 @@ format:
         \definecolor{lightgray}{HTML}{F6F8FA}
         \usepackage{tcolorbox}
         \tcbuselibrary{skins}
-    mainfont: "TeX Gyre Heros"
+        \usepackage{fancyhdr}
+        \usepackage{graphicx}
+        \usepackage{geometry}
+    mainfont: ["Fira Sans", "Arial", "sans-serif"]
     geometry:
       - paperwidth=8.5in
       - paperheight=11in
@@ -23,7 +28,6 @@ format:
     fontsize: 10pt
     colorlinks: true
 ---
-
 
 ```{=tex}
 \begin{tcolorbox}[
