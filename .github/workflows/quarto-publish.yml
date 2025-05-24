@@ -25,6 +25,19 @@ jobs:
           path: ~/.TinyTeX
           key: ${{ runner.os }}-tinytex-${{ hashFiles('**/*.qmd') }}
 
+      - name: Install TeX Gyre Fonts and Rebuild Font Map
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-fonts-extra
+          sudo updmap-sys
+
+      - name: Debug Available Fonts (Optional)
+        run: |
+          fc-list : family | sort
+          kpsewhich --var-value=TEXMFMAIN
+          kpsewhich texmf.cnf
+          kpsewhich TeXGyreHeros-Regular.otf || echo "TeXGyreHeros-Regular.otf not found in LaTeX paths"
+
       - name: Clone Quarto Extension (titlepages)
         run: |
           git clone --depth=1 https://github.com/nmfs-opensci/quarto_titlepages.git
@@ -35,7 +48,7 @@ jobs:
         run: |
           quarto render model_card_modern.qmd --to titlepage-pdf
 
-      - name: Upload PDF artifact
+      - name: Upload PDF Artifact
         uses: actions/upload-artifact@v4
         with:
           name: model-card-pdf
