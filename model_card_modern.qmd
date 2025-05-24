@@ -24,6 +24,7 @@ format:
     colorlinks: true
 ---
 
+
 ```{=tex}
 \begin{tcolorbox}[
   enhanced,
