@@ -1,0 +1,49 @@
+
+\documentclass[11pt,oneside,openany]{scrbook}
+
+% Custom packages and settings
+\usepackage{xcolor}
+\definecolor{noaablue}{HTML}{003366}
+\definecolor{noaalightblue}{HTML}{336699}
+\definecolor{lightgray}{HTML}{F6F8FA}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{fontspec}
+\setmainfont{Lato}
+
+\geometry{
+  paperwidth=8.5in,
+  paperheight=11in,
+  top=0.75in,
+  bottom=0.75in,
+  left=0.75in,
+  right=0.75in
+}
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyfoot[C]{\thepage}
+\fancyfoot[R]{\textcolor{noaablue}{NOAA Fisheries}}
+
+\begin{document}
+
+% Cover Page
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    {\Huge\bfseries\textcolor{noaablue}{Fish Detection Model v1.0}\par}
+    \vspace{1cm}
+    {\Large Model Card\par}
+    \vspace{1cm}
+    \includegraphics[width=0.4\textwidth]{assets/logo.png}\par
+    \vfill
+    {\Large\textcolor{noaablue}{NOAA Fisheries}}\par
+    {\large\today}\par
+\end{titlepage}
+
+% Main Content
+\tableofcontents
+\newpage
