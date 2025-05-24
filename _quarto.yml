@@ -1,13 +1,15 @@
 project:
-  type: default          # ← was "document", change to "default"
+  type: default          # ← was "document", changed to "default"
   output-dir: _output
   render:
     - model_card_modern.qmd
 
 metadata:
   lang: en
-  mainfont: "Nimbus Sans"
-  sansfont: "Nimbus Sans"
+  date: today
+  author-meta: "NOAA Fisheries"
+  mainfont: ["Fira Sans", "Arial", "sans-serif"]    # Updated with modern sans-serif fallback
+  sansfont: ["Fira Sans", "Arial", "sans-serif"]
   monofont: "Courier New"
   papersize: letter
   geometry:
@@ -18,8 +20,6 @@ metadata:
   fontsize: 10pt
   linkcolor: blue
   urlcolor: blue
-  date: today
-  author-meta: "NOAA Fisheries"
 
 format:
   pdf:
@@ -30,11 +30,11 @@ format:
     lof: false
     lot: false
     highlight-style: github
+    pdf-engine: xelatex
+    keep-tex: true
     template-partials:
       - partials/before-body.tex
       - partials/margin-header.tex
-    pdf-engine: xelatex
-    keep-tex: true
     include-in-header:
       text: |
         \usepackage{xcolor}
