@@ -1,4 +1,4 @@
-name: Render Model Card PDF
+name: Render Model Card PDF with Fontship
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
           key: ${{ runner.os }}-tinytex-${{ hashFiles('**/*.qmd') }}
 
       - name: Install Fira Sans with Fontship
-        uses: Fontship/fontship-action@v2
+        uses: theleagueof/fontship@latest
         with:
           fonts: |
             Fira Sans
@@ -41,7 +41,7 @@ jobs:
           mkdir -p _extensions/titlepage
           cp -r quarto_titlepages/_extensions/titlepage/* _extensions/titlepage/
 
-      - name: Render PDF
+      - name: Render PDF with Quarto
         run: |
           quarto render model_card_modern.qmd --to titlepage-pdf
 
