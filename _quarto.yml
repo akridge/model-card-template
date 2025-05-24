@@ -13,31 +13,24 @@ metadata:
   sansfont: "Lato"
   monofont: "Lato"
   papersize: letter
+  fontsize: 10pt
   geometry:
     - top=0.75in
     - bottom=0.75in
     - left=0.75in
     - right=0.75in
-  fontsize: 10pt
   linkcolor: blue
   urlcolor: blue
 
 format:
-  titlepage-pdf:
-    titlepage: true
-    filters: [titlepage]
+  pdf:
     documentclass: scrbook
-    classoption: ["oneside","openany"]
+    classoption: ["oneside", "openany"]
     number-sections: false
-    toc: false
-    lof: false
-    lot: false
+    toc: true
     highlight-style: github
     pdf-engine: xelatex
     keep-tex: true
-    template-partials:
-      - partials/before-body.tex
-      - partials/margin-header.tex
     include-in-header:
       text: |
         \usepackage{xcolor}
@@ -49,9 +42,9 @@ format:
         \usepackage{fancyhdr}
         \usepackage{graphicx}
         \usepackage{geometry}
-    css: assets/style.css
     cover-image: assets/logo.png
     cover-title: "Fish Detection Model v1.0"
     cover-subtitle: "Model Card"
     cover-author: "NOAA Fisheries"
     cover-date: "2025-05-23"
+    css: assets/style.css
