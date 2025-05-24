@@ -23,7 +23,9 @@ metadata:
   urlcolor: blue
 
 format:
-  pdf:
+  titlepage-pdf:
+    titlepage: true
+    filters: [titlepage]
     documentclass: scrbook
     classoption: ["oneside","openany"]
     number-sections: false
@@ -47,3 +49,9 @@ format:
         \usepackage{fancyhdr}
         \usepackage{graphicx}
         \usepackage{geometry}
+    css: assets/style.css
+    cover-image: assets/logo.png
+    cover-title: "Fish Detection Model v1.0"
+    cover-subtitle: "Model Card"
+    cover-author: "NOAA Fisheries"
+    cover-date: "2025-05-23"
