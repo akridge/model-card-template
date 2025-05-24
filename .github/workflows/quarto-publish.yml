@@ -21,6 +21,7 @@ jobs:
           mkdir -p _extensions/nmfs-opensci
           git clone --depth 1 --filter=blob:none --sparse https://github.com/nmfs-opensci/quarto_titlepages.git _extensions/nmfs-opensci/quarto_titlepages
           cd _extensions/nmfs-opensci/quarto_titlepages
+          git sparse-checkout init --cone
           git sparse-checkout set _extension
           mv _extension/* .
           rm -rf _extension .git
