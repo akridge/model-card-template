@@ -1,35 +1,32 @@
 # .github/workflows/render-pdf.yml
-name: Render PDF with Quarto CLI
+name: Render Model Card PDF
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  render:
+  render-pdf:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Quarto
+      - name: Set up Quarto CLI & TinyTeX
         uses: quarto-dev/quarto-actions/setup@v2
-
-      - name: Install TeX Live (APT)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            texlive-xetex \
-            texlive-fonts-recommended \
-            texlive-latex-extra \
-            fonts-liberation
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          version: 'latest'
+          tinytex: true       # ← installs TinyTeX via `quarto install tool tinytex`
 
       - name: Render PDF
-        run: quarto render model_card_modern.qmd --to pdf
+        run: |
+          quarto render model_card_modern.qmd --to pdf
 
-      - name: List output
-        run: ls -lh _output/
+      - name: List generated PDF
+        run: ls -lah _output
 
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v3
