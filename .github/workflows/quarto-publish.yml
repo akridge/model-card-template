@@ -11,18 +11,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install TeX Live Full
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y texlive-full
-
-      - name: Setup Quarto
+      - name: Setup Quarto and TinyTeX
         uses: quarto-dev/quarto-actions/setup@v2
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           version: '1.7.31'
-          tinytex: false  # Disable TinyTeX since we use TeX Live
+          tinytex: true
+
+      - name: Install tlmgr for TinyTeX and Required Packages
+        run: |
+          wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
+          source ~/.TinyTeX/bin/*/texmf-dist/scripts/texlive/tlmgr
+          tlmgr install tcolorbox xcolor fancyhdr geometry fontspec
 
       - name: Render Model Card
         run: |
