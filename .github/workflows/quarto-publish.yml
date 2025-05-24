@@ -31,25 +31,30 @@ jobs:
           path: ~/.TinyTeX
           key: tinytex-${{ runner.os }}-${{ hashFiles('**/model_card_modern.qmd') }}
           restore-keys: |
-            tinytex-${{ runner.os }}-
-
-      - name: Install minimal TeX dependencies
+            tinytex-${{ runner.os }}-      - name: Install minimal TeX dependencies
         run: |
           # Only install if cache miss
           if [ ! -d ~/.TinyTeX ]; then
             echo "Installing TinyTeX..."
             quarto install tool tinytex --no-prompt
             
+            # Add TinyTeX to PATH
+            export PATH="$HOME/.TinyTeX/bin/x86_64-linux:$PATH"
+            
+            # Update tlmgr
+            tlmgr update --self
+            
             # Install only required packages
             tlmgr install \
-              xelatex \
+              collection-basic \
+              collection-latex \
+              collection-fontsrecommended \
+              collection-latexrecommended \
               geometry \
               fancyhdr \
-              graphicx \
               xcolor \
               tcolorbox \
-              fontspec \
-              helvetic
+              fontspec
           fi
           
           # Always install extensions
