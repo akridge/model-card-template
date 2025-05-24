@@ -1,8 +1,9 @@
-name: Build one-page model card PDF
+# .github/workflows/render-modelcard.yml
+name: Build one-page Model Card PDF
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
 
 jobs:
@@ -11,20 +12,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Quarto
-        uses: quarto-dev/quarto-actions/setup@v2
+      # 1) install Quarto CLI
+      - uses: quarto-dev/quarto-actions/setup@v2
         with:
           version: "latest"
 
-      - name: Install TeX (tinytex)
-        uses: teatimeguest/setup-texlive@v2       # light-weight TeXLive
+      # 2) **fix:** install TeX Live (v3 tag!)
+      - name: Setup TeX Live
+        uses: teatimeguest/setup-texlive-action@v3    # ← was @v2
+        with:
+          # enough for xelatex + common packages; tweak if you need more
+          packages: |
+            scheme-small
+            xetex
+            fontspec
+            sectsty
+            xcolor
+            geometry
 
-      - name: Render PDF
-        run: |
-          quarto render example_model_card.qmd --to pdf
+      # 3) render PDF only
+      - run: quarto render example_model_card.qmd --to pdf
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      # 4) upload artefact
+      - uses: actions/upload-artifact@v4
         with:
           name: fish-detector-card
           path: example_model_card.pdf
