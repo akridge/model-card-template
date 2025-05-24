@@ -19,9 +19,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install Perl modules
 RUN cpanm --no-wget File::Find
 
-# Install TinyTeX and required packages
+# Install TinyTeX and required packages, with mirror fix
 RUN quarto install tool tinytex --no-prompt \
-    && tlmgr update --self \
+    && tlmgr option repository http://mirror.ctan.org/systems/texlive/tlnet/ \
+    && tlmgr update --self --all \
     && tlmgr install \
         collection-basic \
         collection-latex \
@@ -39,5 +40,5 @@ RUN quarto install extension quarto-journals/elsevier --no-prompt
 # Set working directory
 WORKDIR /workspace
 
-# Default command
-CMD ["quarto", "render", "--to", "pdf"]
+# Default command: render the model card to PDF
+CMD ["quarto", "render", "model_card_modern.qmd", "--to", "pdf"]

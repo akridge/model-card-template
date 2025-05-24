@@ -34,7 +34,7 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version
 
-      - name: Build and render
+      - name: Build and render with mirror fix
         run: |
           docker-compose build
           docker-compose run --rm model-card
