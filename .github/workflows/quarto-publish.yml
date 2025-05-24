@@ -1,8 +1,5 @@
 name: Build and Publish Model Cards
 
-# Add status badge to README:
-# [![Build Status](https://github.com/noaa-fisheries/model-card-template/actions/workflows/quarto-publish.yml/badge.svg)](https://github.com/noaa-fisheries/model-card-template/actions)
-
 on:
   push:
     branches: [main]
@@ -30,7 +27,9 @@ jobs:
     
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4      - name: Cache TinyTeX
+        uses: actions/checkout@v4
+
+      - name: Cache TinyTeX
         uses: actions/cache@v4
         with:
           path: ~/.TinyTeX
@@ -65,7 +64,9 @@ jobs:
           fi
           
           # Always install extensions
-          quarto install extension quarto-journals/elsevier --no-prompt      - name: Install system dependencies
+          quarto install extension quarto-journals/elsevier --no-prompt
+
+      - name: Install system dependencies
         run: |
           apt-get update
           apt-get install -y --no-install-recommends \
@@ -80,7 +81,7 @@ jobs:
           tlmgr --version
           kpsewhich geometry.sty || echo "geometry.sty not found"
           kpsewhich fancyhdr.sty || echo "fancyhdr.sty not found"
-          
+
       - name: Render Model Card
         uses: quarto-dev/quarto-actions/render@v2
         with:
