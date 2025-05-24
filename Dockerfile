@@ -1,7 +1,7 @@
 # Dockerfile
 FROM ghcr.io/quarto-dev/quarto:latest
 
-# 1) Install system dependencies
+# 1) Make sure we install required system tools
 USER root
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -13,17 +13,19 @@ RUN apt-get update \
        xz-utils \
   && rm -rf /var/lib/apt/lists/*
 
-# 2) Install TinyTeX via Quarto and update/install core TeX Live collections
-RUN quarto install tool tinytex --no-prompt \
-  && tlmgr update --self --all \
+# 2) Install TinyTeX via Quarto and add it to the PATH
+RUN quarto install tool tinytex --no-prompt --update-path
+
+# 3) Now tlmgr is on PATH—update itself and install core collections
+RUN tlmgr update --self --all \
   && tlmgr install \
        collection-basic \
        collection-latexrecommended
 
-# 3) Copy your project in and set working dir
+# 4) Copy in your project
 WORKDIR /home/quarto/project
 COPY . /home/quarto/project
 
-# 4) Default entrypoint to render PDF
+# 5) Default: render your QMD → PDF
 ENTRYPOINT ["quarto", "render"]
 CMD ["model_card_modern.qmd", "--to", "pdf"]
