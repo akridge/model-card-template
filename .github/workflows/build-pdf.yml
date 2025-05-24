@@ -30,13 +30,3 @@ jobs:
         with:
           name: fish-detector-card
           path: fish_detector_card.pdf
-
-      - name: Commit PDF to docs/
-        run: |
-          mkdir -p docs
-          cp fish_detector_card.pdf docs/
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/fish_detector_card.pdf
-          git commit -m "CI: update model card [skip ci]" || echo "no change"
-          git push
