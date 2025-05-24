@@ -9,9 +9,9 @@ metadata:
   date: today
   version: "1.0.0"
   author-meta: "NOAA Fisheries"
-  mainfont: "Lato"
-  sansfont: "Lato"
-  monofont: "Lato"
+  mainfont: "Latin Modern Sans"
+  sansfont: "Latin Modern Sans"
+  monofont: "Latin Modern Sans"
   papersize: letter
   geometry:
     - top=0.75in
