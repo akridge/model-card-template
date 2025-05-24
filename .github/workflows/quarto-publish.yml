@@ -25,18 +25,15 @@ jobs:
           path: ~/.TinyTeX
           key: ${{ runner.os }}-tinytex-${{ hashFiles('**/*.qmd') }}
 
-      - name: Install TeX Gyre Fonts and Rebuild Font Map
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends texlive-fonts-extra
-          sudo updmap-sys
+      - name: Install Fira Sans with Fontship
+        uses: Fontship/fontship-action@v2
+        with:
+          fonts: |
+            Fira Sans
 
       - name: Debug Available Fonts (Optional)
         run: |
           fc-list : family | sort
-          kpsewhich --var-value=TEXMFMAIN
-          kpsewhich texmf.cnf
-          kpsewhich TeXGyreHeros-Regular.otf || echo "TeXGyreHeros-Regular.otf not found in LaTeX paths"
 
       - name: Clone Quarto Extension (titlepages)
         run: |
