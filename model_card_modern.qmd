@@ -50,10 +50,10 @@ format:
 * **Key Performance**: ≈9 of 10 fish detected, rare false positives
 
 ## Technical Details
-* **Architecture**: YOLOv5-L backbone
+* **Architecture**: YOLO11 backbone
 * **Input**: 1920x1080 RGB frames
 * **Output**: Bounding boxes with confidence scores
-* **Training Data**: 50,000 expert-labeled frames
+* **Training Data**: 1000 expert-labeled frames
 :::
 
 ::: {.column width="4%"}
@@ -154,7 +154,7 @@ format:
 
 ::: {.column width="48%"}
 ### Updates & Support
-* Quarterly retraining schedule
+* Retraining schedule
 * Bug reports: [GitHub Issues](https://github.com/noaa-fisheries/fish-detection/issues)
 * Documentation: [Project Wiki](https://github.com/noaa-fisheries/fish-detection/wiki)
 
