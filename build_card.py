@@ -1,3 +1,4 @@
+import json
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
@@ -6,17 +7,28 @@ from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.colors import HexColor, white
 import os
 
-def create_model_card(output_filename="model_card.pdf", logo_path="NOAA_FISHERIES_logoH_web.png",
-                      detection_image_path="example_detection.png", pr_curve_path="example_PR_curve.png"):
+def create_model_card(data_filename="model_card_data.json", output_filename="model_card.pdf"):
     """
-    Generates a PDF model card for an AI model.
+    Generates a PDF model card for an AI model by reading data from a JSON file.
 
     Args:
+        data_filename (str): The name of the JSON data file.
         output_filename (str): The name of the output PDF file.
-        logo_path (str): Path to the NOAA Fisheries logo image.
-        detection_image_path (str): Path to the example detection image.
-        pr_curve_path (str): Path to the Precision-Recall curve image.
     """
+
+    # --- Load data from JSON ---
+    if not os.path.exists(data_filename):
+        print(f"Error: Data file '{data_filename}' not found.")
+        return
+
+    with open(data_filename, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    # Extract image paths and other fixed data from the JSON
+    logo_path = data['image_paths']['logo']
+    detection_image_path = data['image_paths']['detection_example']
+    pr_curve_path = data['image_paths']['pr_curve']
+
     doc = SimpleDocTemplate(output_filename, pagesize=letter,
                             rightMargin=0.5*inch, leftMargin=0.5*inch,
                             topMargin=0.5*inch, bottomMargin=0.5*inch)
@@ -28,8 +40,18 @@ def create_model_card(output_filename="model_card.pdf", logo_path="NOAA_FISHERIE
     BACKGROUND_WHITE = white
 
     # Custom paragraph styles for a modern look
-    styles.add(ParagraphStyle(name='Heading1', fontName='Helvetica-Bold', fontSize=24,
-                              leading=28, alignment=TA_CENTER, textColor=NOAA_BLUE_DARK, spaceAfter=12))
+    # --- START OF FIX ---
+    # Instead of adding a new 'Heading1' style, we MODIFY the existing 'h1' style
+    # 'h1' is the internal key for the 'Heading1' style in ReportLab's sample stylesheet
+    styles['h1'].fontName = 'Helvetica-Bold'
+    styles['h1'].fontSize = 24
+    styles['h1'].leading = 28
+    styles['h1'].alignment = TA_CENTER
+    styles['h1'].textColor = NOAA_BLUE_DARK
+    styles['h1'].spaceAfter = 12
+    # --- END OF FIX ---
+
+    # Add other custom styles (these are fine as they likely don't conflict with defaults)
     styles.add(ParagraphStyle(name='Heading2', fontName='Helvetica-Bold', fontSize=14,
                               leading=16, textColor=NOAA_BLUE_DARK, spaceAfter=6))
     styles.add(ParagraphStyle(name='BodyText', fontName='Helvetica', fontSize=10,
@@ -40,9 +62,10 @@ def create_model_card(output_filename="model_card.pdf", logo_path="NOAA_FISHERIE
     styles.add(ParagraphStyle(name='Quote', fontName='Helvetica-Oblique', fontSize=10,
                               leading=12, textColor=NOAA_BLUE_DARK, spaceBefore=6, spaceAfter=6,
                               alignment=TA_CENTER))
+    # Update the Footer style to use data from JSON
     styles.add(ParagraphStyle(name='Footer', fontName='Helvetica', fontSize=8,
                               leading=10, alignment=TA_CENTER, textColor=NOAA_BLUE_DARK,
-                              linkAndMouseDefs='<link href="mailto:test@noaa.gov" color="blue">test@noaa.gov</link>'))
+                              linkAndMouseDefs=f"<link href='mailto:{data['footer_info']['contact_email']}' color='blue'>{data['footer_info']['contact_email']}</link>"))
 
 
     story = []
@@ -54,21 +77,18 @@ def create_model_card(output_filename="model_card.pdf", logo_path="NOAA_FISHERIE
     left_column_content.append(Spacer(1, 1.0 * inch)) # Increased space for header bar and logo
 
     left_column_content.append(Paragraph("In plain language", styles['Heading2']))
-    left_column_content.append(Paragraph("• Finds <font face='Helvetica-Bold'>≈9 of 10</font> fish in a frame", styles['ListItem'], bulletText=""))
-    left_column_content.append(Paragraph("• <font face='Helvetica-Bold'>Rarely</font> confuses coral/rocks for fish", styles['ListItem'], bulletText=""))
-    left_column_content.append(Paragraph("• Slide the confidence slider → right to cut <i>false positives</i><br/>&nbsp;&nbsp;(you’ll skip a few shy fish)", styles['ListItem'], bulletText=""))
+    for item in data['plain_language_summary']:
+        left_column_content.append(Paragraph(f"• {item}", styles['ListItem'], bulletText=""))
     left_column_content.append(Spacer(1, 0.2 * inch))
 
     left_column_content.append(Paragraph("---", styles['BodyText'])) # Separator
     left_column_content.append(Spacer(1, 0.1 * inch))
 
     left_column_content.append(Paragraph("Key numbers", styles['Heading2']))
-    key_numbers_data = [
-        ['Metric', 'Value', 'What it means'],
-        ['Precision', '<b>0.885</b>', 'Share of detections that are real fish'],
-        ['Recall', '<b>0.861</b>', 'Share of all fish that are found'],
-        ['mAP@0.5', '<b>0.937</b>', 'Combined quality score']
-    ]
+    key_numbers_data = [['Metric', 'Value', 'What it means']] # Header row
+    for item in data['key_numbers']:
+        key_numbers_data.append([item['metric'], item['value'], item['meaning']])
+
     # Adjust column widths for better fit
     key_numbers_table = Table(key_numbers_data, colWidths=[1.2*inch, 0.8*inch, 2.5*inch])
     key_numbers_table.setStyle(TableStyle([
@@ -102,8 +122,8 @@ def create_model_card(output_filename="model_card.pdf", logo_path="NOAA_FISHERIE
 
     right_column_content.append(Paragraph("Tune the confidence threshold", styles['Heading2']))
     tune_threshold_data = [
-        ['0.20', '0.50 <i>(default)</i>', '0.80'],
-        ['Catch <i>everything</i>', 'Balanced', 'Only sure hits']
+        [item['threshold'] for item in data['confidence_thresholds']],
+        [item['description'] for item in data['confidence_thresholds']]
     ]
     # Adjust column widths for better fit
     tune_threshold_table = Table(tune_threshold_data, colWidths=[1.7*inch, 1.7*inch, 1.7*inch])
@@ -150,31 +170,28 @@ def create_model_card(output_filename="model_card.pdf", logo_path="NOAA_FISHERIE
     else:
         print(f"Warning: PR curve image not found at {pr_curve_path}")
 
-    right_column_content.append(Paragraph("“<i>All models are wrong, some are useful.</i>”", styles['Quote']))
-    right_column_content.append(Paragraph("Trained on expert-labelled images – humans <font face='Helvetica-Bold'>and</font> models make mistakes.<br/>Use results as a helpful <font face='Helvetica-Bold'>preview</font>, not the final answer.", styles['BodyText']))
+    right_column_content.append(Paragraph(data['quote'], styles['Quote']))
+    right_column_content.append(Paragraph(data['disclaimer'], styles['BodyText']))
     right_column_content.append(Spacer(1, 0.2 * inch))
 
 
     # Use a single table to lay out the two columns side-by-side
-    # The sum of colWidths should be less than or equal to doc.width
-    # A small gap between columns for visual separation
     column_gap = 0.2 * inch
     col_width = (doc.width - column_gap) / 2.0
 
-    data = [[left_column_content, right_column_content]]
-    column_table = Table(data, colWidths=[col_width, col_width])
+    table_data = [[left_column_content, right_column_content]]
+    column_table = Table(table_data, colWidths=[col_width, col_width])
     column_table.setStyle(TableStyle([
         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ('LEFTPADDING', (0, 0), (0, 0), 0),
-        ('RIGHTPADDING', (0, 0), (0, 0), column_gap / 2), # Padding for the left column
-        ('LEFTPADDING', (1, 0), (1, 0), column_gap / 2), # Padding for the right column
+        ('RIGHTPADDING', (0, 0), (0, 0), column_gap / 2),
+        ('LEFTPADDING', (1, 0), (1, 0), column_gap / 2),
         ('RIGHTPADDING', (1, 0), (1, 0), 0),
     ]))
     story.append(column_table)
 
     # Add a final spacer before the footer to push it to the bottom
-    # This might require some trial and error depending on content length
-    story.append(Spacer(1, 0.5 * inch)) # Placeholder, adjusted by bottom margin in page_template
+    story.append(Spacer(1, 0.5 * inch))
 
 
     # Define the page template function for header, logo, and footer
@@ -186,35 +203,37 @@ def create_model_card(output_filename="model_card.pdf", logo_path="NOAA_FISHERIE
         canvas.rect(0, 0, letter[0], letter[1], fill=1)
 
         # Blue header bar at the top
-        header_height = 0.8 * inch # Height of the blue header bar
+        header_height = 0.8 * inch
         canvas.setFillColor(NOAA_BLUE_DARK)
         canvas.rect(0, letter[1] - header_height, letter[0], header_height, fill=1)
 
         # Draw a subtle blue line above the footer for visual separation
         canvas.setStrokeColor(NOAA_BLUE_LIGHT)
         canvas.setLineWidth(0.5)
-        # Position the line relative to the bottom margin
         canvas.line(doc.leftMargin, doc.bottomMargin + 0.3*inch, letter[0] - doc.rightMargin, doc.bottomMargin + 0.3*inch)
 
         # Logo on top left corner, within the blue header bar
         if os.path.exists(logo_path):
             logo = Image(logo_path)
-            logo_width = 1.0 * inch # Adjusted logo size
+            logo_width = 1.0 * inch
             logo_height = logo.drawHeight * (logo_width / logo.drawWidth)
-            # Position logo inside the blue bar, with a small margin
             canvas.drawImage(logo_path, doc.leftMargin, letter[1] - logo_height - (header_height - logo_height) / 2,
                              width=logo_width, height=logo_height)
         else:
             print(f"Warning: Logo image not found at {logo_path}")
 
         # Draw the footer text explicitly at the bottom center
-        footer_text = Paragraph("v1.0 • © 2025 NOAA / CIMAR • Questions: <a href='mailto:test@noaa.gov'><font color='blue'>test@noaa.gov</font></a>", styles['Footer'])
+        footer_text_content = (
+            f"v{data['footer_info']['version']} • © {data['footer_info']['year']} {data['footer_info']['organization']} "
+            f"• Questions: <a href='mailto:{data['footer_info']['contact_email']}'><font color='blue'>{data['footer_info']['contact_email']}</font></a>"
+        )
+        # Use the Paragraph style defined earlier to render the footer text
+        footer_text_paragraph = Paragraph(footer_text_content, styles['Footer'])
         # Calculate footer position
-        footer_text_width = doc.width # We assume footer text fits in doc width
-        footer_text_height = footer_text.wrapOn(canvas, footer_text_width, doc.height)[1]
+        footer_text_width = doc.width
+        footer_text_height = footer_text_paragraph.wrapOn(canvas, footer_text_width, doc.height)[1]
         footer_y = doc.bottomMargin - 0.05 * inch # Position slightly above the bottom margin
-        footer_text.drawOn(canvas, doc.leftMargin, footer_y)
-
+        footer_text_paragraph.drawOn(canvas, doc.leftMargin, footer_y)
 
         canvas.restoreState()
 
@@ -223,11 +242,4 @@ def create_model_card(output_filename="model_card.pdf", logo_path="NOAA_FISHERIE
     print(f"Model card '{output_filename}' created successfully.")
 
 if __name__ == "__main__":
-    # Ensure your image files are in the same directory as the script, or provide full paths
-    # When running with GitHub Actions, the files will be in the working directory
-    # so relative paths are appropriate.
-    create_model_card(
-        logo_path="NOAA_FISHERIES_logoH_web.png",
-        detection_image_path="example_detection.png",
-        pr_curve_path="example_PR_curve.png"
-    )
+    create_model_card(data_filename="model_card_data.json")
