@@ -16,6 +16,10 @@ jobs:
           version: '1.7.31'
           tinytex: true
 
+      - name: Install quarto_titlepages extension
+        run: |
+          quarto add nmfs-opensci/quarto_titlepages
+
       - name: Render PDF
         run: |
           quarto render model_card_modern.qmd --to titlepage
