@@ -15,7 +15,7 @@ format:
         \definecolor{lightgray}{HTML}{F6F8FA}
         \usepackage{tcolorbox}
         \tcbuselibrary{skins}
-    mainfont: Nimbus Sans
+    mainfont: "TeX Gyre Heros"
     geometry:
       - paperwidth=8.5in
       - paperheight=11in
