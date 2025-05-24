@@ -1,3 +1,4 @@
+
 project:
   type: default
   output-dir: _output
@@ -42,7 +43,7 @@ format:
         \usepackage{fancyhdr}
         \usepackage{graphicx}
         \usepackage{geometry}
-    cover-image: assets/logo.png
+    template: assets/custom_template.tex
     cover-title: "Fish Detection Model v1.0"
     cover-subtitle: "Model Card"
     cover-author: "NOAA Fisheries"
