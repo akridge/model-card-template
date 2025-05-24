@@ -29,7 +29,7 @@ jobs:
           quarto render model_card_modern.qmd --to titlepage
 
       - name: Upload PDF artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: model-card-pdf
           path: _output/*.pdf
