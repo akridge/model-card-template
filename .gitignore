@@ -1,0 +1,22 @@
+# Output directory
+_output/
+_site/
+
+# Quarto files
+/.quarto/
+_freeze/
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+
+# System files
+.DS_Store
+Thumbs.db
+
+# LaTeX temporary files
+*.aux
+*.log
+*.out
+*.synctex.gz

@@ -1,5 +1,13 @@
 {
   "model_name": "Fish Detection Model v1.0",
+  "model_details": {
+    "architecture": "YOLOv5-L",
+    "input_size": "1920x1080 RGB",
+    "training_data": "50,000 expert-labeled frames",
+    "version": "1.0.0",
+    "release_date": "2025-05-23",
+    "last_updated": "2025-05-23"
+  },
   "plain_language_summary": [
     "Finds **≈9 of 10** fish in a frame",
     "**Rarely** confuses coral/rocks for fish",

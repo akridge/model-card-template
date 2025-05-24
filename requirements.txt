@@ -1,3 +1,12 @@
-matplotlib
-Pillow
-reportlab
+# PDF generation
+texlive-xetex
+texlive-fonts-recommended
+texlive-plain-generic
+
+# Python packages (if using Python scripts)
+matplotlib>=3.5.0
+Pillow>=9.0.0
+reportlab>=3.6.0
+
+# Fonts
+fonts-liberation

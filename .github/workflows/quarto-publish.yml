@@ -1,12 +1,16 @@
-name: Render and Publish Model Card
+name: Build and Publish Model Cards
+
+# Add status badge to README:
+# [![Build Status](https://github.com/noaa-fisheries/model-card-template/actions/workflows/quarto-publish.yml/badge.svg)](https://github.com/noaa-fisheries/model-card-template/actions)
 
 on:
   push:
-    branches: main
+    branches: [main]
     paths:
       - '**.qmd'
       - '**.yml'
       - 'assets/**'
+      - 'partials/**'
   workflow_dispatch:
 
 jobs:
@@ -23,10 +27,12 @@ jobs:
         with:
           version: pre-release
 
-      - name: Install TinyTeX
+      - name: Install Dependencies
         run: |
           quarto install tool tinytex
           quarto install extension quarto-journals/elsevier
+          sudo apt-get update
+          sudo apt-get install -y fonts-liberation
           
       - name: Render Quarto Project
         uses: quarto-dev/quarto-actions/render@v2
