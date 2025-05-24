@@ -1,11 +1,7 @@
-# .github/workflows/render-pdf.yml
 name: Render Model Card PDF
-
 on:
   push:
     branches: [ main ]
-
-
 jobs:
   render-pdf:
     runs-on: ubuntu-latest
@@ -19,10 +15,6 @@ jobs:
         with:
           version: '1.7.31'
           tinytex: true
-
-      - name: Install title-page extension
-        run: |
-          quarto install extension nmfs-opensci/quarto_titlepages
 
       - name: Render PDF
         run: |
