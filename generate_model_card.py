@@ -237,14 +237,17 @@ def create_model_card(data_filename="model_card_data.json", output_filename="mod
         canvas.line(doc.leftMargin, doc.bottomMargin + 0.3*inch, letter[0] - doc.rightMargin, doc.bottomMargin + 0.3*inch)
 
         # Logo on top left corner, within the blue header bar
-        if os.path.exists(logo_path):
-            logo = Image(logo_path)
-            logo_width = 1.0 * inch
-            logo_height = logo.drawHeight * (logo_width / logo.drawWidth)
-            canvas.drawImage(logo_path, doc.leftMargin, letter[1] - logo_height - (header_height - logo_height) / 2,
-                             width=logo_width, height=logo_height)
-        else:
-            print(f"Warning: Logo image not found at {logo_path}")
+        try:
+            if os.path.exists(logo_path):
+                logo = Image(logo_path)
+                logo_width = 1.0 * inch
+                logo_height = logo.drawHeight * (logo_width / logo.drawWidth)
+                canvas.drawImage(logo_path, doc.leftMargin, letter[1] - logo_height - (header_height - logo_height) / 2,
+                               width=logo_width, height=logo_height)
+            else:
+                print(f"Warning: Logo image not found at {logo_path}")
+        except Exception as e:
+            print(f"Warning: Error drawing logo: {e}")
 
         # Draw the footer text explicitly at the bottom center
         footer_text_content = (
@@ -259,10 +262,9 @@ def create_model_card(data_filename="model_card_data.json", output_filename="mod
         footer_y = doc.bottomMargin - 0.05 * inch # Position slightly above the bottom margin
         footer_text_paragraph.drawOn(canvas, doc.leftMargin, footer_y)
 
-        canvas.restoreState()
-
-    # Build the document using the story and the custom page template
-    doc.build(story, onAndAfterPage=page_template)
+        canvas.restoreState()    # Build the document using the story and the custom page template
+    # Since we want the same template for all pages, we use both onFirstPage and onLaterPages
+    doc.build(story, onFirstPage=page_template, onLaterPages=page_template)
     print(f"Model card '{output_filename}' created successfully.")
 
 if __name__ == "__main__":

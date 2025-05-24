@@ -36,8 +36,8 @@
     "contact_email": "test@noaa.gov"
   },
   "image_paths": {
-    "logo": "NOAA_FISHERIES_logoH_web.png",
-    "detection_example": "example_detection.png",
-    "pr_curve": "example_PR_curve.png"
+    "logo": "./assets/NOAA_FISHERIES_logoH_web.png",
+    "detection_example": "./assets/example_detection.png",
+    "pr_curve": "./assets/example_PR_curve.png"
   }
 }

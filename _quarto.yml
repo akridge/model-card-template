@@ -1,6 +1,0 @@
-project:
-  type: default
-format:
-  pdf: default
-execute:
-  freeze: auto
