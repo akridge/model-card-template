@@ -19,10 +19,10 @@ jobs:
           version: '1.7.31'
           tinytex: true
 
-      - name: Install Nimbus Sans font (Helvetica equivalent)
+      - name: Install TeX Gyre Fonts (includes TeX Gyre Heros)
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends texlive-fonts-recommended
+          sudo apt-get install -y --no-install-recommends texlive-fonts-extra
 
       - name: Clone Quarto Extension (quarto_titlepages)
         run: |
