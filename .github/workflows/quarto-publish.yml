@@ -1,60 +1,40 @@
-name: Build PDF via Docker
+# .github/workflows/render-pdf.yml
+name: Render PDF with Quarto CLI
 
 on:
   push:
     branches: [ main ]
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
-  build-pdf:
+  render:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Check out your repo so we have the QMD + data + _quarto.yml
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      # 2) Set up Buildx (for layer caching)
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.0.0
-
-      # 3) Restore Docker cache (optional but speeds up rebuilds)
-      - name: Restore Docker cache
-        uses: actions/cache@v3
+      - name: Set up Quarto
+        uses: quarto-actions/setup-quarto@v2
         with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+          version: 'latest'
 
-      # 4) Build the Docker image and load it into the local engine
-      - name: Build Quarto PDF image
-        uses: docker/build-push-action@v5.1.0
-        with:
-          context: .
-          file: Dockerfile
-          tags: quarto-pdf:latest
-          load: true               # <— ensures `docker run quarto-pdf:latest` works
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to:   type=local,dest=/tmp/.buildx-cache
-
-      # 5) Run the container to render the PDF
-      - name: Render model card PDF
+      - name: Install TeX Live (APT)
         run: |
-          docker run --rm \
-            -v "${{ github.workspace }}":/home/quarto/project \
-            quarto-pdf:latest
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-xetex \
+            texlive-fonts-recommended \
+            texlive-latex-extra \
+            fonts-liberation
 
-      # 6) (Sanity check) list the output directory
-      - name: List generated PDF
-        run: ls -lah _output
+      - name: Render PDF
+        run: quarto render model_card_modern.qmd --to pdf
 
-      # 7) Upload the PDF as an artifact so you can download it
+      - name: List output
+        run: ls -lh _output/
+
       - name: Upload PDF artifact
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v3
         with:
-          name: model-card-pdf        # a friendly artifact name
-          path: _output/*.pdf         # ← this is required!
+          name: model-card-pdf
+          path: _output/*.pdf
