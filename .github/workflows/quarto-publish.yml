@@ -15,12 +15,12 @@ env:
   TINYTEX_DIR: ~/.TinyTeX
   QUARTO_VERSION: pre-release
 
-jobs:
-  build-deploy:
+jobs:  build-deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      steps:
+    
+    steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
@@ -29,9 +29,10 @@ jobs:
 
       - name: Install Docker Compose
         run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.21.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version      - name: Build and render
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.21.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
+      - name: Build and render
         run: |
           docker-compose build
           docker-compose run --rm model-card
