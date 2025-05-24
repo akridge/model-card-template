@@ -1,12 +1,15 @@
-version: "3"
+version: '3.8'
+
 services:
-  model-card:
+  quarto:
     build:
       context: .
       dockerfile: Dockerfile
+    image: quarto-pdf:latest
     volumes:
-      - .:/workspace
-    working_dir: /workspace
-    entrypoint: /bin/bash -c "
-      quarto render model_card_modern.qmd --to pdf
-    "
+      - ./:/home/quarto/project:rw
+    working_dir: /home/quarto/project
+    command: >
+      quarto render
+      model_card_modern.qmd
+      --to pdf

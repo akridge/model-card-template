@@ -1,4 +1,4 @@
-# NOAA Model Card Template
+# NOAA Model Card Template (in-development)
 
 A modern, clean template for creating model cards using Quarto. This template provides a standardized way to document machine learning models following NOAA guidelines.
 

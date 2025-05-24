@@ -1,9 +1,6 @@
 project:
-  type: website
+  type: document
   output-dir: _output
-  preview:
-    port: 4200
-    browser: false
   render:
     - model_card_modern.qmd
 
@@ -25,10 +22,9 @@ metadata:
   author-meta: "NOAA Fisheries"
 
 format:
-  titlepage-pdf:
+  pdf:
     documentclass: scrbook
-    papersize: letter
-    classoption: ["oneside", "open=any"]
+    classoption: ["oneside","openany"]
     number-sections: false
     toc: false
     lof: false
@@ -39,7 +35,7 @@ format:
       - partials/margin-header.tex
     pdf-engine: xelatex
     keep-tex: true
-    include-in-header: 
+    include-in-header:
       text: |
         \usepackage{xcolor}
         \definecolor{noaablue}{HTML}{003366}

@@ -1,44 +1,31 @@
-# Use Quarto's official image as base
+# Dockerfile
 FROM ghcr.io/quarto-dev/quarto:latest
 
-# Set environment variables
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TINYTEX_DIR=/root/.TinyTeX
-ENV PATH="${TINYTEX_DIR}/bin/x86_64-linux:${PATH}"
+ENV DEBIAN_FRONTEND=noninteractive \
+    TINYTEX_DIR=/root/.TinyTeX \
+    PATH=/root/.TinyTeX/bin/x86_64-linux:$PATH
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    fonts-liberation \
-    make \
-    git \
-    perl \
-    perl-modules \
-    cpanminus \
-    && rm -rf /var/lib/apt/lists/*
+USER root
 
-# Install Perl modules
-RUN cpanm --no-wget File::Find
+# Install system dependencies and TinyTeX
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+       fonts-liberation \
+       make \
+       git \
+       perl \
+       cpanminus \
+  && rm -rf /var/lib/apt/lists/* \
+  && cpanm --no-wget File::Find \
+  && quarto install tool tinytex --no-prompt \
+  && tlmgr update --self \
+  && tlmgr install \
+       collection-basic \
+       collection-latexrecommended
 
-# Install TinyTeX and required packages, with mirror fix
-RUN quarto install tool tinytex --no-prompt \
-    && tlmgr option repository http://mirror.ctan.org/systems/texlive/tlnet/ \
-    && tlmgr update --self --all \
-    && tlmgr install \
-        collection-basic \
-        collection-latex \
-        collection-fontsrecommended \
-        collection-latexrecommended \
-        geometry \
-        fancyhdr \
-        xcolor \
-        tcolorbox \
-        fontspec
+WORKDIR /home/quarto/project
+COPY . /home/quarto/project
 
-# Install Quarto extensions
-RUN quarto install extension quarto-journals/elsevier --no-prompt
-
-# Set working directory
-WORKDIR /workspace
-
-# Default command: render the model card to PDF
-CMD ["quarto", "render", "model_card_modern.qmd", "--to", "pdf"]
+# Default to rendering PDF
+ENTRYPOINT ["quarto", "render"]
+CMD ["model_card_modern.qmd", "--to", "pdf"]
