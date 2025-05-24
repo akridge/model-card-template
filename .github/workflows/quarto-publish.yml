@@ -64,23 +64,40 @@ jobs:
           fi
           
           # Always install extensions
-          quarto install extension quarto-journals/elsevier --no-prompt
-
-      - name: Install system dependencies
+          quarto install extension quarto-journals/elsevier --no-prompt      - name: Install system dependencies
         run: |
           apt-get update
           apt-get install -y --no-install-recommends \
             fonts-liberation \
             make \
-            git
+            git \
+            perl \
+            perl-modules \
+            cpanminus
+          
+          # Install required Perl modules
+          cpanm --no-wget File::Find
 
       - name: Verify TinyTeX installation
         run: |
           echo "Verifying TinyTeX installation..."
           export PATH="$TINYTEX_DIR/bin/x86_64-linux:$PATH"
+          
+          # Check TinyTeX
+          if ! command -v tlmgr &> /dev/null; then
+              echo "Error: tlmgr not found. TinyTeX installation failed."
+              exit 1
+          fi
           tlmgr --version
-          kpsewhich geometry.sty || echo "geometry.sty not found"
-          kpsewhich fancyhdr.sty || echo "fancyhdr.sty not found"
+          
+          # Check required packages
+          for pkg in "geometry.sty" "fancyhdr.sty" "xcolor.sty" "tcolorbox.sty"; do
+            if ! kpsewhich "$pkg" &> /dev/null; then
+              echo "Error: $pkg not found. Package installation may have failed."
+              exit 1
+            fi
+            echo "✓ Found $pkg"
+          done
 
       - name: Render Model Card
         uses: quarto-dev/quarto-actions/render@v2
