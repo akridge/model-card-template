@@ -11,7 +11,12 @@ on:
       - '**.yml'
       - 'assets/**'
       - 'partials/**'
+      - 'scripts/**'
   workflow_dispatch:
+
+env:
+  TINYTEX_DIR: ~/.TinyTeX
+  QUARTO_VERSION: pre-release
 
 jobs:
   build-deploy:
@@ -20,18 +25,20 @@ jobs:
       contents: write
     container:
       image: ghcr.io/quarto-dev/quarto:latest
+      env:
+        DEBIAN_FRONTEND: noninteractive
     
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Cache TinyTeX
+        uses: actions/checkout@v4      - name: Cache TinyTeX
         uses: actions/cache@v4
         with:
           path: ~/.TinyTeX
           key: tinytex-${{ runner.os }}-${{ hashFiles('**/model_card_modern.qmd') }}
           restore-keys: |
-            tinytex-${{ runner.os }}-      - name: Install minimal TeX dependencies
+            tinytex-${{ runner.os }}-
+
+      - name: Install minimal TeX dependencies
         run: |
           # Only install if cache miss
           if [ ! -d ~/.TinyTeX ]; then
@@ -58,27 +65,46 @@ jobs:
           fi
           
           # Always install extensions
-          quarto install extension quarto-journals/elsevier --no-prompt
-
-      - name: Install system fonts
+          quarto install extension quarto-journals/elsevier --no-prompt      - name: Install system dependencies
         run: |
           apt-get update
-          apt-get install -y --no-install-recommends fonts-liberation
+          apt-get install -y --no-install-recommends \
+            fonts-liberation \
+            make \
+            git
+
+      - name: Verify TinyTeX installation
+        run: |
+          echo "Verifying TinyTeX installation..."
+          export PATH="$TINYTEX_DIR/bin/x86_64-linux:$PATH"
+          tlmgr --version
+          kpsewhich geometry.sty || echo "geometry.sty not found"
+          kpsewhich fancyhdr.sty || echo "fancyhdr.sty not found"
           
-      - name: Render Quarto Project
+      - name: Render Model Card
         uses: quarto-dev/quarto-actions/render@v2
         with:
           to: pdf
+
+      - name: Verify PDF Generation
+        run: |
+          if [ ! -f "_output/model_card_modern.pdf" ]; then
+            echo "Error: PDF was not generated"
+            exit 1
+          fi
+          echo "PDF generated successfully"
 
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
           name: model-card-pdf
           path: _output/*.pdf
+          if-no-files-found: error
 
-      - name: Deploy 🚀
+      - name: Deploy to GitHub Pages 🚀
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
           folder: _output
+          clean: true
